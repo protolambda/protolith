@@ -1,0 +1,16 @@
+name: chainviz_server
+description: Backend for chainviz.
+version: 1.0.0
+homepage: https://github.com/protolambda/chainviz_server
+author: proto <proto@protolambda.com>
+license: MIT
+
+environment:
+  sdk: '>=2.0.0 <3.0.0'
+
+dependencies:
+  args: ^1.4.2
+  shelf: ^0.7.2
+
+#dev_dependencies:
+#  test: ^1.0.0
