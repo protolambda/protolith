@@ -1,12 +1,20 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:shelf/shelf.dart' as shelf;
-import 'package:shelf/shelf_io.dart' as io;
+
+import 'package:chainviz_server/ws_handler.dart';
+
+const String notFoundPageHtml = '''
+<html><head>
+<title>404 Not Found</title>
+</head><body>
+<h1>Not Found</h1>
+<p>No resource for this URL.</p>
+</body></html>''';
 
 main(List<String> args) async {
   var parser = new ArgParser()
-    ..addOption('port', abbr: 'p', defaultsTo: '8080');
+    ..addOption('port', abbr: 'p', defaultsTo: '8081');
 
   var result = parser.parse(args);
 
@@ -20,13 +28,26 @@ main(List<String> args) async {
     return;
   }
 
-  var handler = const shelf.Pipeline()
-      .addMiddleware(shelf.logRequests())
-      .addHandler(_echoRequest);
+  HttpServer.bind(InternetAddress.loopbackIPv4, port)
+      .then((HttpServer server) {
 
-  var server = await io.serve(handler, 'localhost', port);
-  print('Serving at http://${server.address.host}:${server.port}');
+    server.listen((HttpRequest request) {
+      if (request.uri.path == '/ws') {
+        WebSocketTransformer.upgrade(request).then(wsHandler, onError: (err) {
+          print("Failed to upgrade websocket request.");
+        });
+      } else {
+        HttpResponse response = request.response;
+        response.statusCode = HttpStatus.NOT_FOUND;
+        response.headers.set('Content-Type', 'text/html; charset=UTF-8');
+        response.write(notFoundPageHtml);
+        response.close();
+      }
+    });
+  });
+
+
+  print('Serving at http://localhost:$port');
+
 }
 
-shelf.Response _echoRequest(shelf.Request request) =>
-    new shelf.Response.ok('Request for "${request.url}"');
