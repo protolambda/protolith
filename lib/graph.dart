@@ -1,4 +1,3 @@
-
 import 'dart:async';
 
 class Node {
@@ -152,5 +151,32 @@ class Graph {
   /// Get all edges that had a change since the given tick (inclusive).
   List<Edge> getEdgesSince(int sinceTick) =>
       edges.values.where((e) => e.tick >= sinceTick);
+
+  // Create the update stream; this is what clients will be updated with.
+  final StreamController _updateStreamController = new StreamController<void>.broadcast();
+
+  Stream get updates => _updateStreamController.stream;
+
+  Timer _periodicUpdateTimer;
+
+  Graph() {
+    _updateStreamController.stream.listen((_) => this.update());
+  }
+
+  void startUpdates() {
+    if (_periodicUpdateTimer == null)
+      _periodicUpdateTimer = new Timer.periodic(
+          const Duration(seconds: 1),
+              (_) => _updateStreamController.add(null));
+  }
+
+  void stopUpdates() {
+    _periodicUpdateTimer?.cancel();
+    _periodicUpdateTimer = null;
+  }
+
+  void close() {
+    _updateStreamController.close();
+  }
 }
 
