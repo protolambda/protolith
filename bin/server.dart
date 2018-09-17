@@ -1,7 +1,7 @@
+import 'dart:async';
 import 'dart:io';
-
 import 'package:args/args.dart';
-
+import 'package:chainviz_server/graph.dart';
 import 'package:chainviz_server/ws_handler.dart';
 
 const String notFoundPageHtml = '''
@@ -27,6 +27,14 @@ main(List<String> args) async {
     exitCode = 64;
     return;
   }
+  runZoned(() {
+    startServer(port);
+
+//    new Timer.periodic(duration, callback) //TODO
+  }, zoneValues: { #graph: new Graph() });
+}
+
+void startServer(int port) {
 
   HttpServer.bind(InternetAddress.loopbackIPv4, port)
       .then((HttpServer server) {
@@ -38,7 +46,7 @@ main(List<String> args) async {
         });
       } else {
         HttpResponse response = request.response;
-        response.statusCode = HttpStatus.NOT_FOUND;
+        response.statusCode = HttpStatus.notFound;
         response.headers.set('Content-Type', 'text/html; charset=UTF-8');
         response.write(notFoundPageHtml);
         response.close();

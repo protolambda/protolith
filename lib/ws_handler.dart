@@ -31,8 +31,13 @@ void wsHandler(WebSocket webSocket) {
 
   webSocket.listen((message) {
     if (message is String) {
-      List<String> parts = message.split(";");
-      switch (parts[0]) {
+      Map<String, dynamic> data;
+      try {
+        data = jsonDecode(message);
+      } catch (err) {
+        print("Could not decode message from client: $message");
+      }
+      switch (data["type"]) {
         case "subscribe":
           clientSubscribed = true;
           break;
@@ -40,20 +45,14 @@ void wsHandler(WebSocket webSocket) {
           clientSubscribed = false;
           break;
         case "confirm-tick":
-          int ct = int.parse(parts[1]?.trim(), onError: (s) {
-            print("Invalid get-since param: $s");
-            return null;
-          });
+          int ct = data["tick"];
           if (ct != null) clientTick = ct;
           break;
         case "get-all":
           sendSince(-1);
           break;
         case "get-since":
-          int since = int.parse(parts[1]?.trim(), onError: (s) {
-            print("Invalid get-since param: $s");
-            return null;
-          });
+          int since = data["tick"];
           if (since != null) sendSince(since);
           break;
       }
