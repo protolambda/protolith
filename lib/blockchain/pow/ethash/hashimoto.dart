@@ -101,7 +101,40 @@ HashimotoResult hashimoto(Uint8List headerBytes, int nonce, int full_size, Datas
       new Hash256(new ByteData.view(result.buffer)));
 }
 
+Uint8List makeCache(int cacheSize, Uint8List seed) {
+  int n = cacheSize ~/ HASH_BYTES;
+
+  // Sequentially produce the initial dataset
+  Uint8List output = new Uint8List(cacheSize);
+  Uint8List hashRes = sha3_512(seed);
+  output.setRange(0, HASH_BYTES, hashRes);
+  for (int i = 1, j = HASH_BYTES; i < n; i++, j += HASH_BYTES) {
+    // Hash previous output
+    hashRes = sha3_512(hashRes);
+    output.setRange(j, j + HASH_BYTES, hashRes);
+  }
+
+  ByteData outputView = new ByteData.view(output.buffer);
+  Uint8List temp = new Uint8List(HASH_BYTES);
+  // Use a low-round version of randmemohash
+  for (int round = 0; round < CACHE_ROUNDS; round++) {
+    for (int i = 0; i < n; i++) {
+      int srcOffset = (i - 1 + n) % n;
+      int dstOffset = i * HASH_BYTES;
+      int xorOffset = (outputView.getUint32(dstOffset, Endian.little) % n) * HASH_BYTES;
+      for (int xi = 0; xi < HASH_BYTES; xi++) {
+        temp[xi] = output[srcOffset+xi] ^ output[xorOffset + xi]
+      }
+      Uint8List hash = sha3_512(temp);
+      output.setRange(dstOffset, dstOffset + HASH_BYTES, hash);
+    }
+  }
+
+  return output;
+}
+
 Uint8List _calcDatasetItem(cache, x) {
+  // TODO
   return new Uint8List(HASH_BYTES);
 }
 
