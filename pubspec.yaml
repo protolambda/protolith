@@ -12,3 +12,5 @@ dependencies:
   args: ^1.4.2
   shelf: ^0.7.2
   shelf_web_socket: ^0.2.2
+  pointycastle: ^1.0.0-rc4
+  web3dart: ^0.4.1
