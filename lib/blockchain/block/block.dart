@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:chainviz_server/blockchain.dart';
 import 'package:chainviz_server/blockchain/hash.dart';
+import 'package:chainviz_server/blockchain/meta/blocks/meta.dart';
 
-abstract class Block {
+abstract class Block<M extends BlockMeta> {
 
   /// QUANTITY - the block number. null when its pending block.
   int number;
@@ -31,7 +31,7 @@ abstract class Block {
   @override
   int get hashCode => hash.hashCode;
 
-  Future<bool> validate(BlockChain chain) async {
+  Future<bool> validate(M meta) async {
     // Return false by default. Implementor has the say if it's really valid.
     return false;
   }
