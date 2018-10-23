@@ -1,6 +1,6 @@
 
 import 'package:chainviz_server/blockchain/structures/merkle_tree.dart';
-import 'package:chainviz_server/blockchain/tx_compound.dart';
+import 'package:chainviz_server/blockchain/tx/tx_compound.dart';
 
 class StateChangeBlockData {
 

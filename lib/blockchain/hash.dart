@@ -1,10 +1,15 @@
 
 import 'dart:typed_data';
 
+import 'package:chainviz_server/crypto/data_util.dart';
+
 /**
  * 256 bit hash, immutable.
  */
 class Hash256 {
+
+  /// Length of this type of hash.
+  static const int BYTES = 32;
 
   UnmodifiableByteDataView _data;
 
@@ -23,12 +28,26 @@ class Hash256 {
     this._data = new UnmodifiableByteDataView(data);
   }
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          (other is Hash256
+              && runtimeType == other.runtimeType
+              && equalUint8lists(uint8list, other.uint8list));
+
+  // It's a hash, the first 64 bits should be good enough as an object hashcode.
+  @override
+  int get hashCode => _data.getUint64(0);
+
 }
 
 /**
  * 512 bit hash, immutable.
  */
 class Hash512 {
+
+  /// Length of this type of hash.
+  static const int BYTES = 64;
 
   UnmodifiableByteDataView _data;
 
@@ -46,5 +65,16 @@ class Hash512 {
       throw new ArgumentError("Invalid blockhash being initialized! Data must be 512 bits (64 bytes)!");
     this._data = new UnmodifiableByteDataView(data);
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          (other is Hash256
+              && runtimeType == other.runtimeType
+              && equalUint8lists(uint8list, other.uint8list));
+
+  // It's a hash, the first 64 bits should be good enough as an object hashcode.
+  @override
+  int get hashCode => _data.getUint64(0);
 
 }

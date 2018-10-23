@@ -1,8 +1,11 @@
-
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:chainviz_server/blockchain/address.dart';
+import 'package:chainviz_server/blockchain/hash.dart';
+import 'package:chainviz_server/blockchain/pow/ethash/epoch.dart';
+import 'package:chainviz_server/blockchain/pow/ethash/hashimoto.dart';
+
+import 'package:pointycastle/src/utils.dart';
 
 class EthashBlockData {
 
@@ -18,7 +21,12 @@ class EthashBlockData {
   ///QUANTITY - integer of the total difficulty of the chain until this block.
   BigInt totalDifficulty;
 
-  Future<bool> verifyPOW(EthashCache cache, Uint8List mixHash) {
+  Future<bool> verifyPOW(HashimotoEpoch epoch, Hash256 headerHash, Hash256 mixHash) async {
+    HashimotoResult result = epoch.hashimotoLight(headerHash, nonce);
+    if (result.digest != mixHash) return false;
 
+    // decode hash into big-endian BigInt, and check if it is low enough.
+    BigInt hashRes = decodeBigInt(result.blockHash.uint8list);
+    return (hashRes <= (BigInt.from(1) << 256) ~/ difficulty);
   }
 }
