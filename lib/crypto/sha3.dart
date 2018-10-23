@@ -1,18 +1,27 @@
 
 import 'dart:typed_data';
 
+import 'package:chainviz_server/blockchain/hash.dart';
 import 'package:pointycastle/digests/sha3.dart';
 
 final SHA3Digest sha3digest_256 = new SHA3Digest(256);
 
-Uint8List sha3_256(Uint8List input) {
+Hash256 sha3_256(ByteData input) {
   sha3digest_256.reset();
-  return sha3digest_256.process(input);
+  return new Hash256.fromUint8List(sha3digest_256.process(
+      new Uint8List.view(
+          input.buffer, input.offsetInBytes, input.lengthInBytes
+      )
+  ));
 }
 
 final SHA3Digest sha3digest_512 = new SHA3Digest(512);
 
-Uint8List sha3_512(Uint8List input) {
+Hash512 sha3_512(ByteData input) {
   sha3digest_512.reset();
-  return sha3digest_512.process(input);
+  return new Hash512.fromUint8List(sha3digest_512.process(
+      new Uint8List.view(
+          input.buffer, input.offsetInBytes, input.lengthInBytes
+      )
+  ));
 }
