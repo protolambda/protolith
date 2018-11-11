@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:typed_data';
 
@@ -11,8 +10,16 @@ import 'package:chainviz_server/blockchain/block/data/state_change.dart';
 import 'package:chainviz_server/blockchain/block/data/uncle.dart';
 import 'package:chainviz_server/blockchain/hash.dart';
 import 'package:chainviz_server/blockchain/meta/blocks/standard_meta.dart';
+import 'package:chainviz_server/crypto/sha3.dart';
 
-class StandardBlock<M extends StandardBlockMeta> extends Block<M> with OutputBlockData, ExtraBlockData, UncleBlockData, EthashBlockData, GasStateBlockData, StateChangeBlockData {
+class StandardBlock<M extends StandardBlockMeta> extends Block<M>
+    with
+        OutputBlockData,
+        ExtraBlockData,
+        UncleBlockData,
+        EthashBlockData,
+        GasStateBlockData,
+        StateChangeBlockData {
 
   @override
   Hash256 computeHash() {
@@ -24,7 +31,15 @@ class StandardBlock<M extends StandardBlockMeta> extends Block<M> with OutputBlo
   Future<bool> validate(M meta) async {
     // TODO check validity before checking POW
 
-    return await verifyPOW(meta.hashimotoEpoch, headerHash, this.hash);
+    Hash256 hashOfTruncatedHeader = sha3_256(getTruncatedHeaderBytes());
+
+    return await verifyPOW(
+        meta.hashimotoEpoch, hashOfTruncatedHeader, this.hash);
   }
 
+  /// Get the header-bytes used to create the block,
+  ///  without the mixHash and nonce.
+  UnmodifiableByteDataView getTruncatedHeaderBytes() {
+
+  }
 }

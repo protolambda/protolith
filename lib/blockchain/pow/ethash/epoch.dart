@@ -1,4 +1,3 @@
-
 import 'dart:typed_data';
 
 import 'package:chainviz_server/blockchain/hash.dart';
@@ -10,7 +9,6 @@ import 'package:chainviz_server/crypto/data_util.dart';
 import 'package:chainviz_server/crypto/sha3.dart';
 
 class HashimotoEpoch {
-
   // block-number of the start of this epoch
   final int blockNum;
 
@@ -33,24 +31,27 @@ class HashimotoEpoch {
   HashimotoEpoch mkNextEpoch() =>
       new HashimotoEpoch(blockNum + 1, sha3_512(seedHash.data));
 
-
   void loadCache() {
-    // TODO prime number
     _cache = makeCache(cacheSize, seedHash);
   }
-
 
   @override
   String toString() => 'HashimotoEpoch{EpochNum: $epochNum}';
 
   UnmodifiableUint8ListView _calcDatasetItem(x) {
-    if (_cache == null) throw StateError(
-        "Cache is not initialized! Epoch: $epochNum");
+    if (_cache == null)
+      throw StateError("Cache is not initialized! Epoch: $epochNum");
     return new UnmodifiableUint8ListView(
         uint8View(_cache, skip: x * HASH_BYTES, length: HASH_BYTES));
   }
 
-  HashimotoResult hashimotoLight(Hash256 headerBytes, int nonce) =>
-      hashimoto(headerBytes, nonce, fullSize, _calcDatasetItem);
+  /// For the common hashimoto usage
+  HashimotoResult hashimotoLight(Hash256 headerHash, int nonce) =>
+      hashimoto(headerHash, nonce, fullSize, _calcDatasetItem);
 
+  /// For advanced use; when the seedHash is already computed,
+  ///  one can continue to calculate mixHash.
+  /// Used to continue a POW verification after mix-hash pre-checking.
+  Hash256 calcMixHashLight(Hash512 seedHash) =>
+      calculateMixHash(seedHash, fullSize, _calcDatasetItem);
 }
