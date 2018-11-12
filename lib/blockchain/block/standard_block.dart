@@ -10,7 +10,9 @@ import 'package:chainviz_server/blockchain/block/data/state_change.dart';
 import 'package:chainviz_server/blockchain/block/data/uncle.dart';
 import 'package:chainviz_server/blockchain/hash.dart';
 import 'package:chainviz_server/blockchain/meta/blocks/standard_meta.dart';
+import 'package:chainviz_server/crypto/data_util.dart';
 import 'package:chainviz_server/crypto/sha3.dart';
+import 'package:chainviz_server/encodings/rlp/rlp_encode.dart';
 
 class StandardBlock<M extends StandardBlockMeta> extends Block<M>
     with
@@ -31,7 +33,7 @@ class StandardBlock<M extends StandardBlockMeta> extends Block<M>
   Future<bool> validate(M meta) async {
     // TODO check validity before checking POW
 
-    Hash256 hashOfTruncatedHeader = sha3_256(getTruncatedHeaderBytes());
+    Hash256 hashOfTruncatedHeader = sha3_256(byteView(getTruncatedHeaderBytes()));
 
     return await verifyPOW(
         meta.hashimotoEpoch, hashOfTruncatedHeader, this.hash);
@@ -39,9 +41,8 @@ class StandardBlock<M extends StandardBlockMeta> extends Block<M>
 
   /// Get the header-bytes used to create the block,
   ///  without the mixHash and nonce.
-  UnmodifiableByteDataView getTruncatedHeaderBytes() =>
-  // TODO implement RLP
-    RLP.encodeRLP([
+  Uint8List getTruncatedHeaderBytes() =>
+    encodeRLP([
       parentHash,
       ommersHash,
       beneficiary,
