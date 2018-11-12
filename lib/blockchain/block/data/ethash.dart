@@ -12,7 +12,7 @@ class EthashBlockData {
   int nonce;
 
   ///DATA, 20 Bytes - the address of the beneficiary to whom the mining rewards were given.
-  EthereumAddress miner;
+  EthereumAddress beneficiary;
 
   ///QUANTITY - integer of the difficulty for this block.
   BigInt difficulty;

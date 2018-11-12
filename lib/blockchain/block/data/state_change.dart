@@ -1,4 +1,5 @@
 
+import 'package:chainviz_server/blockchain/hash.dart';
 import 'package:chainviz_server/blockchain/structures/merkle_tree.dart';
 import 'package:chainviz_server/blockchain/tx/tx_compound.dart';
 
@@ -17,6 +18,7 @@ class StateChangeBlockData {
   TransactionCompound transactions;
 
   ///DATA, 256 Bytes - the bloom filter for the logs of the block. null when its pending block.
-  dynamic logsBloom;
+  /// Not strictly a hash, but also an unmodifiable 256 bit value.
+  Hash256 logsBloom;
 
 }

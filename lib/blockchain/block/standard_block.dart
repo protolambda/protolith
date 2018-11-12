@@ -39,7 +39,22 @@ class StandardBlock<M extends StandardBlockMeta> extends Block<M>
 
   /// Get the header-bytes used to create the block,
   ///  without the mixHash and nonce.
-  UnmodifiableByteDataView getTruncatedHeaderBytes() {
+  UnmodifiableByteDataView getTruncatedHeaderBytes() =>
+  // TODO implement RLP
+    RLP.encodeRLP([
+      parentHash,
+      ommersHash,
+      beneficiary,
+      stateRoot.hash,
+      transactionsRoot.hash,
+      receiptsRoot.hash,
+      logsBloom,
+      difficulty,
+      number,
+      gasLimit,
+      gasUsed,
+      timestamp,
+      extraData
+    ]);
 
-  }
 }
