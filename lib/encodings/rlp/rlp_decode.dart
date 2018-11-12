@@ -4,79 +4,92 @@
 
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:chainviz_server/encodings/serializeables/uint8_serializeable.dart';
-import 'package:pointycastle/src/utils.dart';
+import 'package:chainviz_server/crypto/data_util.dart';
 
-const _rlpEncoder = const RlpEncoder();
+const _rlpDecoder = const RlpDecoder();
 
-/// Encode an input with the default RLP encoder.
-final encodeRLP = _rlpEncoder.convert;
+/// Decode an input with the default RLP decoder.
+final decodeRLP = _rlpDecoder.convert;
 
 
-class RlpEncodingException implements Exception {
+class RlpDecodingException implements Exception {
   final message;
 
-  RlpEncodingException([this.message]);
+  RlpDecodingException([this.message]);
 
   String toString() {
-    if (message == null) return "RlpEncodingException";
-    return "RlpEncodingException: $message";
+    if (message == null) return "RlpDecodingException";
+    return "RlpDecodingException: $message";
   }
 }
 
-class RlpEncoder extends Converter<dynamic, Uint8List> {
+/// Decoder for the RLP (Recursive Length Prefix) encoding.
+/// Used to encode arbitrarily nested arrays of data.
+/// See: https://github.com/ethereum/wiki/wiki/RLP
+class RlpDecoder extends Converter<Uint8List, dynamic> {
 
-  const RlpEncoder();
+  const RlpDecoder();
 
-  static Uint8List maybeEncodeLength(Uint8List input) {
-    if (input.length == 1 && input.first < 0x80) {
-      return input;
-    } else {
-      return encodeLength(input.length, 0x80) + input;
-    }
-  }
-
-  static Uint8List encodeLength(len, offset) {
-    if (len < 56) {
-      return new Uint8List.fromList([len + offset]);
-    } else {
-      Uint8List binary = encodeInt(len);
-      return new Uint8List.fromList([binary.length + offset + 55]) + binary;
-    }
-  }
-
-  static Uint8List encodeInt(int x) {
-    int len = (x.bitLength >> 3) + 1;
-    Uint8List res = new Uint8List(len);
-    // big-endian
-    for (int i = 0; i < len; i++) {
-      res[len - 1 - i] = (x >> (i << 3)) & 0xFF;
+  static int decodeInt(Uint8List x) {
+    int res = 0;
+    // add all bytes, creating a big-endian integer.s
+    for (int b in x) {
+      res <<= 8;
+      res |= b;
     }
     return res;
   }
 
-  /// Convert any input that is either:
-  ///  - a [String]
-  ///  - a [int]
-  ///  - a [BigInt]
-  ///  - a [Uint8Serializeable]
-  ///  - a [List] with convertible elements
+  /// Convert any a uint8list to its "decoded" form
+  ///  (i.e. structured but raw elements):
+  /// - non-list elements are decoded into [Uint8List]s
+  /// - except for single byte values, these are decoded into [int]s
+  /// - lists are decoded into [List]s of converted elements.
+  /// So you may want to go over the resulting list
+  ///  and decode the individual elements to their deserialized datatype.
   @override
-  Uint8List convert(dynamic input) {
-    if (input is List) {
-      Uint8List output = new Uint8List.fromList(input.expand(convert).toList());
-      return encodeLength(output.length, 0xc0) + output;
+  dynamic convert(Uint8List input) {
+    if (input.length == 0) {
+      return null;
     } else {
-      return maybeEncodeLength(
-            input is String
-          ? new Uint8List.fromList(input.codeUnits)
-          : input is int
-          ? encodeInt(input)
-          : input is BigInt
-          ? encodeBigInt(input)
-          : input is Uint8Serializeable
-          ? input.toUint8List()
-          : throw new RlpEncodingException("Failed to encode to RLP: ${input}"));
+      int prefix = input[0];
+      if (prefix <= 0x7f) {
+        return prefix;
+      } else if (prefix <= 0xb7) {
+        int itemLen = prefix - 0x80;
+        if (input.length < itemLen)
+          throw new RlpDecodingException("Encoded data is not valid RLP!");
+        return uint8View(input, skip: 1, length: itemLen);
+      } else if (prefix <= 0xbf) {
+        int lenOfItemLen = prefix - 0xb7;
+
+        if (input.length < lenOfItemLen)
+          throw new RlpDecodingException("Encoded data is not valid RLP!");
+
+        int itemLen = decodeInt(uint8View(input, skip: 1, length: lenOfItemLen));
+
+        if(input.length < lenOfItemLen + itemLen)
+          throw new RlpDecodingException("Encoded data is not valid RLP!");
+
+        return uint8View(input, skip: 1 + lenOfItemLen, length: itemLen);
+      } else if (prefix <= 0xf7) {
+        int listLen = prefix - 0xc0;
+        if (input.length < listLen)
+          throw new RlpDecodingException("Encoded data is not valid RLP!");
+
+        return uint8View(input, skip: 1, length: listLen);
+      } else if (prefix <= 0xff) {
+        int lenOfListLen = prefix - 0xf7;
+        if (input.length < lenOfListLen)
+          throw new RlpDecodingException("Encoded data is not valid RLP!");
+
+        int listLen = decodeInt(uint8View(input, skip: 1, length: lenOfListLen));
+
+        if (input.length < lenOfListLen + listLen)
+          throw new RlpDecodingException("Encoded data is not valid RLP!");
+
+        return uint8View(input, skip: 1 + lenOfListLen, length: listLen);
+      }
     }
   }
 

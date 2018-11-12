@@ -1,10 +1,6 @@
-/// The RLP (Recursive Length Prefix) encoding.
-/// Used to encode arbitrarily nested arrays of data.
-/// See: https://github.com/ethereum/wiki/wiki/RLP
-
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:chainviz_server/encodings/serializeables/uint8_serializeable.dart';
+import 'package:chainviz_server/encodings/serializeables/uint8_list_serializeable.dart';
 import 'package:pointycastle/src/utils.dart';
 
 const _rlpEncoder = const RlpEncoder();
@@ -24,6 +20,9 @@ class RlpEncodingException implements Exception {
   }
 }
 
+/// Encoder for the RLP (Recursive Length Prefix) encoding.
+/// Used to encode arbitrarily nested arrays of data.
+/// See: https://github.com/ethereum/wiki/wiki/RLP
 class RlpEncoder extends Converter<dynamic, Uint8List> {
 
   const RlpEncoder();
@@ -74,7 +73,7 @@ class RlpEncoder extends Converter<dynamic, Uint8List> {
           ? encodeInt(input)
           : input is BigInt
           ? encodeBigInt(input)
-          : input is Uint8Serializeable
+          : input is Uint8ListSerializeable
           ? input.toUint8List()
           : throw new RlpEncodingException("Failed to encode to RLP: ${input}"));
     }
