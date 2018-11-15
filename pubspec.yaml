@@ -11,3 +11,6 @@ environment:
 dependencies:
   pointycastle: ^1.0.0-rc4
   web3dart: ^0.4.1
+
+dev_dependencies:
+  test: ^1.5.1

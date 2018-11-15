@@ -1,0 +1,9 @@
+# Project guidelines:
+#
+# 1) Unit tests should be placed near the source file which is being tested
+# 2) General tests should be placed in *repo-root*/test/
+# 3) Every test file starts with "test_"
+# 4) When configuration needs to be changed for a specific test/group of tests,
+#    then a second nested test configuration should be used. (See `include` in test package docs:
+#    https://github.com/dart-lang/test/blob/master/pkgs/test/doc/configuration.md#include)
+filename: "test_*.dart"
