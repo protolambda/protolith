@@ -1,6 +1,6 @@
 
-import 'package:chainviz_server/blockchain/pow/ethash/constants.dart';
-import 'package:chainviz_server/crypto/prime.dart';
+import 'package:protolith/blockchain/pow/ethash/constants.dart';
+import 'package:protolith/crypto/prime.dart';
 
 int getCacheSize(int epochNum) {
   int size = CACHE_BYTES_INIT + CACHE_BYTES_GROWTH * epochNum;

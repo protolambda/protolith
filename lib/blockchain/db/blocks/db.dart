@@ -1,9 +1,9 @@
 
 import 'dart:async';
 
-import 'package:chainviz_server/blockchain/block/block.dart';
-import 'package:chainviz_server/blockchain/hash.dart';
-import 'package:chainviz_server/blockchain/meta/blocks/meta.dart';
+import 'package:protolith/blockchain/block/block.dart';
+import 'package:protolith/blockchain/hash.dart';
+import 'package:protolith/blockchain/meta/blocks/meta.dart';
 
 abstract class BlockDB<M extends BlockMeta, B extends Block<M>> {
 

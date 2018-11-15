@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'package:chainviz_server/blockchain/pow/ethash/constants.dart';
+import 'package:protolith/blockchain/pow/ethash/constants.dart';
 
 const int FNV_PRIME = 0x01000193;
 

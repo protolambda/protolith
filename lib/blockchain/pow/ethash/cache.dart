@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
-import 'package:chainviz_server/blockchain/hash.dart';
-import 'package:chainviz_server/blockchain/pow/ethash/constants.dart';
-import 'package:chainviz_server/crypto/data_util.dart';
-import 'package:chainviz_server/crypto/sha3.dart';
+import 'package:protolith/blockchain/hash.dart';
+import 'package:protolith/blockchain/pow/ethash/constants.dart';
+import 'package:protolith/crypto/data_util.dart';
+import 'package:protolith/crypto/sha3.dart';
 
 UnmodifiableByteDataView makeCache(int cacheSize, Hash512 seed) {
   int n = cacheSize ~/ HASH_BYTES;

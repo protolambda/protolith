@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:chainviz_server/blockchain/block/block.dart';
+import 'package:protolith/blockchain/block/block.dart';
 
 abstract class BlockProvider<B extends Block> {
 

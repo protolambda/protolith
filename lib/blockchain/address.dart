@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:chainviz_server/encodings/serializeables/uint8_list_serializeable.dart';
+import 'package:protolith/encodings/serializeables/uint8_list_serializeable.dart';
 import 'package:web3dart/src/wallet/credential.dart' as Web3;
 import 'package:pointycastle/src/utils.dart';
 

@@ -1,3 +1,4 @@
-## 1.0.0
+# 0.0.1
 
-- Initial version, created by Stagehand
+Prototyping phase, work-in-progress.
+

@@ -1,7 +1,7 @@
 
 import 'dart:typed_data';
 
-import 'package:chainviz_server/blockchain/hash.dart';
+import 'package:protolith/blockchain/hash.dart';
 import 'package:pointycastle/digests/sha3.dart';
 
 final SHA3Digest sha3digest_256 = new SHA3Digest(256);

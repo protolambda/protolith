@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:chainviz_server/blockchain/block/block.dart';
-import 'package:chainviz_server/blockchain/block/standard_block.dart';
-import 'package:chainviz_server/blockchain/chain/blockchain.dart';
-import 'package:chainviz_server/blockchain/flow/inputs/blocks/provider.dart';
-import 'package:chainviz_server/blockchain/meta/blocks/standard_meta.dart';
+import 'package:protolith/blockchain/block/block.dart';
+import 'package:protolith/blockchain/block/standard_block.dart';
+import 'package:protolith/blockchain/chain/blockchain.dart';
+import 'package:protolith/blockchain/flow/inputs/blocks/provider.dart';
+import 'package:protolith/blockchain/meta/blocks/standard_meta.dart';
 
 class FakeBlockProvider extends BlockProvider<StandardBlock> {
 

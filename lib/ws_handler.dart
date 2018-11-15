@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:chainviz_server/graph.dart';
-import 'package:chainviz_server/graph_json.dart';
+import 'package:protolith/graph.dart';
+import 'package:protolith/graph_json.dart';
 
 void wsHandler(WebSocket webSocket) {
   // Get the graph we are working with.

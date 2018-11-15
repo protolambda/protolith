@@ -1,5 +1,5 @@
-import 'package:chainviz_server/blockchain/meta/blocks/meta.dart';
-import 'package:chainviz_server/blockchain/pow/ethash/epoch.dart';
+import 'package:protolith/blockchain/meta/blocks/meta.dart';
+import 'package:protolith/blockchain/pow/ethash/epoch.dart';
 
 class StandardBlockMeta extends BlockMeta {
 

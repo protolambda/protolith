@@ -1,10 +1,10 @@
 import 'dart:typed_data';
 
-import 'package:chainviz_server/blockchain/hash.dart';
-import 'package:chainviz_server/blockchain/pow/ethash/constants.dart';
-import 'package:chainviz_server/blockchain/pow/ethash/fnv.dart';
-import 'package:chainviz_server/crypto/data_util.dart';
-import 'package:chainviz_server/crypto/sha3.dart';
+import 'package:protolith/blockchain/hash.dart';
+import 'package:protolith/blockchain/pow/ethash/constants.dart';
+import 'package:protolith/blockchain/pow/ethash/fnv.dart';
+import 'package:protolith/crypto/data_util.dart';
+import 'package:protolith/crypto/sha3.dart';
 
 class HashimotoResult {
   /// The mix-hash

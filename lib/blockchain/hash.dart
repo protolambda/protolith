@@ -1,8 +1,8 @@
 
 import 'dart:typed_data';
 
-import 'package:chainviz_server/crypto/data_util.dart';
-import 'package:chainviz_server/encodings/serializeables/uint8_list_serializeable.dart';
+import 'package:protolith/crypto/data_util.dart';
+import 'package:protolith/encodings/serializeables/uint8_list_serializeable.dart';
 
 /**
  * 256 bit hash, immutable.

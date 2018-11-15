@@ -1,7 +1,7 @@
 
 import 'dart:typed_data';
 
-import 'package:chainviz_server/blockchain/hash.dart';
+import 'package:protolith/blockchain/hash.dart';
 
 class UncleBlockData {
 

@@ -1,7 +1,7 @@
 
-import 'package:chainviz_server/blockchain/hash.dart';
-import 'package:chainviz_server/blockchain/structures/merkle_tree.dart';
-import 'package:chainviz_server/blockchain/tx/tx_compound.dart';
+import 'package:protolith/blockchain/hash.dart';
+import 'package:protolith/blockchain/structures/merkle_tree.dart';
+import 'package:protolith/blockchain/tx/tx_compound.dart';
 
 class StateChangeBlockData {
 

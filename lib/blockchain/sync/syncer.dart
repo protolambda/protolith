@@ -1,8 +1,8 @@
 
-import 'package:chainviz_server/blockchain/block/block.dart';
-import 'package:chainviz_server/blockchain/chain/blockchain.dart';
-import 'package:chainviz_server/blockchain/flow/inputs/blocks/provider.dart';
-import 'package:chainviz_server/blockchain/meta/blocks/meta.dart';
+import 'package:protolith/blockchain/block/block.dart';
+import 'package:protolith/blockchain/chain/blockchain.dart';
+import 'package:protolith/blockchain/flow/inputs/blocks/provider.dart';
+import 'package:protolith/blockchain/meta/blocks/meta.dart';
 
 /// Keeps a [BlockChain] in sync;
 /// - tries to back-fill

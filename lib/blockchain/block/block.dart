@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:chainviz_server/blockchain/hash.dart';
-import 'package:chainviz_server/blockchain/meta/blocks/meta.dart';
+import 'package:protolith/blockchain/hash.dart';
+import 'package:protolith/blockchain/meta/blocks/meta.dart';
 
 abstract class Block<M extends BlockMeta> {
 

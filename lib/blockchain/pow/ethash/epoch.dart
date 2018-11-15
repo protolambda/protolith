@@ -1,12 +1,12 @@
 import 'dart:typed_data';
 
-import 'package:chainviz_server/blockchain/hash.dart';
-import 'package:chainviz_server/blockchain/pow/ethash/cache.dart';
-import 'package:chainviz_server/blockchain/pow/ethash/constants.dart';
-import 'package:chainviz_server/blockchain/pow/ethash/hashimoto.dart';
-import 'package:chainviz_server/blockchain/pow/ethash/size.dart';
-import 'package:chainviz_server/crypto/data_util.dart';
-import 'package:chainviz_server/crypto/sha3.dart';
+import 'package:protolith/blockchain/hash.dart';
+import 'package:protolith/blockchain/pow/ethash/cache.dart';
+import 'package:protolith/blockchain/pow/ethash/constants.dart';
+import 'package:protolith/blockchain/pow/ethash/hashimoto.dart';
+import 'package:protolith/blockchain/pow/ethash/size.dart';
+import 'package:protolith/crypto/data_util.dart';
+import 'package:protolith/crypto/sha3.dart';
 
 class HashimotoEpoch {
   // block-number of the start of this epoch

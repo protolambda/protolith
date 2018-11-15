@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:chainviz_server/encodings/serializeables/uint8_list_serializeable.dart';
+import 'package:protolith/encodings/serializeables/uint8_list_serializeable.dart';
 import 'package:pointycastle/src/utils.dart';
 
 const _rlpEncoder = const RlpEncoder();

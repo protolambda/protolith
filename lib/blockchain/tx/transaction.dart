@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
-import 'package:chainviz_server/blockchain/address.dart';
-import 'package:chainviz_server/blockchain/hash.dart';
-import 'package:chainviz_server/crypto/ecdsa.dart';
+import 'package:protolith/blockchain/address.dart';
+import 'package:protolith/blockchain/hash.dart';
+import 'package:protolith/crypto/ecdsa.dart';
 
 class Transaction {
 

@@ -4,7 +4,7 @@
 
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:chainviz_server/crypto/data_util.dart';
+import 'package:protolith/crypto/data_util.dart';
 
 const _rlpDecoder = const RlpDecoder();
 

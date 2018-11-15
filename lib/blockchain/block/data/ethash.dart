@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:chainviz_server/blockchain/address.dart';
-import 'package:chainviz_server/blockchain/hash.dart';
-import 'package:chainviz_server/blockchain/pow/ethash/epoch.dart';
-import 'package:chainviz_server/blockchain/pow/ethash/hashimoto.dart';
+import 'package:protolith/blockchain/address.dart';
+import 'package:protolith/blockchain/hash.dart';
+import 'package:protolith/blockchain/pow/ethash/epoch.dart';
+import 'package:protolith/blockchain/pow/ethash/hashimoto.dart';
 
 import 'package:pointycastle/src/utils.dart';
 

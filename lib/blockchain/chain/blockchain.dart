@@ -1,11 +1,11 @@
 
 import 'dart:async';
 
-import 'package:chainviz_server/blockchain/block/block.dart';
-import 'package:chainviz_server/blockchain/db/blocks/db.dart';
-import 'package:chainviz_server/blockchain/exceptions/invalid_block.dart';
-import 'package:chainviz_server/blockchain/hash.dart';
-import 'package:chainviz_server/blockchain/meta/blocks/meta.dart';
+import 'package:protolith/blockchain/block/block.dart';
+import 'package:protolith/blockchain/db/blocks/db.dart';
+import 'package:protolith/blockchain/exceptions/invalid_block.dart';
+import 'package:protolith/blockchain/hash.dart';
+import 'package:protolith/blockchain/meta/blocks/meta.dart';
 
 class BlockChain<M extends BlockMeta, B extends Block<M>> {
 

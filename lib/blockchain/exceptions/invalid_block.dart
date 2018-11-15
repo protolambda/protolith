@@ -1,5 +1,5 @@
-import 'package:chainviz_server/blockchain/block/block.dart';
-import 'package:chainviz_server/blockchain/meta/blocks/meta.dart';
+import 'package:protolith/blockchain/block/block.dart';
+import 'package:protolith/blockchain/meta/blocks/meta.dart';
 
 class InvalidBlockException<M extends BlockMeta, B extends Block<M>> implements Exception {
 
