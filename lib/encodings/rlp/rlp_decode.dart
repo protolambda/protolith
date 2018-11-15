@@ -23,6 +23,12 @@ class RlpDecodingException implements Exception {
   }
 }
 
+class _RLPWindow {
+  int offset, length;
+  bool hasNestedData;
+  _RLPWindow(this.offset, this.length, this.hasNestedData);
+}
+
 /// Decoder for the RLP (Recursive Length Prefix) encoding.
 /// Used to encode arbitrarily nested arrays of data.
 /// See: https://github.com/ethereum/wiki/wiki/RLP
@@ -49,17 +55,37 @@ class RlpDecoder extends Converter<Uint8List, dynamic> {
   ///  and decode the individual elements to their deserialized datatype.
   @override
   dynamic convert(Uint8List input) {
+    _RLPWindow outWindow = _decodeWindow(input);
+    if (!outWindow.hasNestedData) {
+      return uint8View(input, skip: outWindow.offset, length: outWindow.length);
+    } else {
+      int remainingDataLen = outWindow.length;
+      int offset = outWindow.offset;
+      List<dynamic> out = [];
+      while (remainingDataLen > 0) {
+        _RLPWindow nestedWindow = _decodeWindow(uint8View(input, skip: offset, length: remainingDataLen));
+        // Convert the first item in the window, and add it to the list
+        out.add(convert(uint8View(input, skip: offset, length: remainingDataLen)));
+        // Change the remaining window: we skip the item we just added, and reduce the length to reflect this.
+        remainingDataLen -= nestedWindow.offset + nestedWindow.length;
+        offset += nestedWindow.offset + nestedWindow.length;
+      }
+      return out;
+    }
+  }
+
+  _RLPWindow _decodeWindow(Uint8List input) {
     if (input.length == 0) {
-      return null;
+      return _RLPWindow(0, 0, false);
     } else {
       int prefix = input[0];
       if (prefix <= 0x7f) {
-        return prefix;
+        return _RLPWindow(0, 1, false);
       } else if (prefix <= 0xb7) {
         int itemLen = prefix - 0x80;
         if (input.length < itemLen)
           throw new RlpDecodingException("Encoded data is not valid RLP!");
-        return uint8View(input, skip: 1, length: itemLen);
+        return _RLPWindow(1, itemLen, false);
       } else if (prefix <= 0xbf) {
         int lenOfItemLen = prefix - 0xb7;
 
@@ -71,14 +97,14 @@ class RlpDecoder extends Converter<Uint8List, dynamic> {
         if(input.length < lenOfItemLen + itemLen)
           throw new RlpDecodingException("Encoded data is not valid RLP!");
 
-        return uint8View(input, skip: 1 + lenOfItemLen, length: itemLen);
+        return _RLPWindow(1 + lenOfItemLen, itemLen, false);
       } else if (prefix <= 0xf7) {
         int listLen = prefix - 0xc0;
         if (input.length < listLen)
           throw new RlpDecodingException("Encoded data is not valid RLP!");
 
-        return uint8View(input, skip: 1, length: listLen);
-      } else if (prefix <= 0xff) {
+        return _RLPWindow(1, listLen, true);
+      } else {
         int lenOfListLen = prefix - 0xf7;
         if (input.length < lenOfListLen)
           throw new RlpDecodingException("Encoded data is not valid RLP!");
@@ -88,7 +114,7 @@ class RlpDecoder extends Converter<Uint8List, dynamic> {
         if (input.length < lenOfListLen + listLen)
           throw new RlpDecodingException("Encoded data is not valid RLP!");
 
-        return uint8View(input, skip: 1 + lenOfListLen, length: listLen);
+        return _RLPWindow(1 + lenOfListLen, listLen, true);
       }
     }
   }

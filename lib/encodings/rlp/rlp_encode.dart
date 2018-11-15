@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:protolith/crypto/data_util.dart';
 import 'package:protolith/encodings/serializeables/uint8_list_serializeable.dart';
 import 'package:pointycastle/src/utils.dart';
 
@@ -28,10 +29,12 @@ class RlpEncoder extends Converter<dynamic, Uint8List> {
   const RlpEncoder();
 
   static Uint8List maybeEncodeLength(Uint8List input) {
+    // Note; empty lists in RLP are length encoded,
+    //  while lists of 1 "small" item are not!
     if (input.length == 1 && input.first < 0x80) {
       return input;
     } else {
-      return encodeLength(input.length, 0x80) + input;
+      return concatUint8Lists(encodeLength(input.length, 0x80), input);
     }
   }
 
@@ -39,13 +42,18 @@ class RlpEncoder extends Converter<dynamic, Uint8List> {
     if (len < 56) {
       return new Uint8List.fromList([len + offset]);
     } else {
-      Uint8List binary = encodeInt(len);
-      return new Uint8List.fromList([binary.length + offset + 55]) + binary;
+      Uint8List encodedLen = encodeInt(len);
+      return concatUint8Lists(new Uint8List.fromList([encodedLen.length + offset + 55]), encodedLen);
     }
   }
 
   static Uint8List encodeInt(int x) {
-    int len = (x.bitLength >> 3) + 1;
+    // note the integer 0 has a bitlength of 0,
+    //  and is encoded as an empty uint8 list.
+    int bits = x.bitLength;
+    int len = (bits >> 3);
+    // if not divisible by 8, round up.
+    if (bits & 7 != 0) len++;
     Uint8List res = new Uint8List(len);
     // big-endian
     for (int i = 0; i < len; i++) {
@@ -62,12 +70,14 @@ class RlpEncoder extends Converter<dynamic, Uint8List> {
   ///  - a [List] with convertible elements
   @override
   Uint8List convert(dynamic input) {
-    if (input is List) {
+    if (input is List && input is! Uint8List) {
       Uint8List output = new Uint8List.fromList(input.expand(convert).toList());
-      return encodeLength(output.length, 0xc0) + output;
+      return concatUint8Lists(encodeLength(output.length, 0xc0), output);
     } else {
       return maybeEncodeLength(
-            input is String
+          input is Uint8List
+          ? input
+          : input is String
           ? new Uint8List.fromList(input.codeUnits)
           : input is int
           ? encodeInt(input)
