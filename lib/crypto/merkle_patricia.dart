@@ -26,28 +26,18 @@ class Trie {
 
 }
 
-class Value {
+abstract class Value {
 
-  Uint8List _key;
-  Uint8List _data;
+  Uint8List get data;
+  Uint8List get key;
 
-  Uint8List get data => _data;
-  Uint8List get key => _key;
-
-  int get nibbleLength => _key.lengthInBytes << 1;
+  int get nibbleLength => key.lengthInBytes << 1;
 
   /**
    * Returns the nibble key at the given [keyDepth] in the complete value key,
    * or throws a [RangeError] if [keyDepth] is out of bounds.
    */
-  int operator [](int keyDepth) => (_key[keyDepth >> 1] >> (keyDepth & 1 == 1 ? 0 : 4)) & 0xf;
-
-  set data(Uint8List v) {
-    _data = v;
-    _key = (_data != null && _data.length >= 32)
-        ? sha3_256(byteView(_data)).uint8list
-        : _data;
-  }
+  int operator [](int keyDepth) => (key[keyDepth >> 1] >> (keyDepth & 1 == 1 ? 0 : 4)) & 0xf;
 
 }
 
