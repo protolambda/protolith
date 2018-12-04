@@ -19,14 +19,30 @@ class StandardBlock<M extends StandardBlockMeta> extends Block<M>
         OutputBlockData,
         ExtraBlockData,
         UncleBlockData,
-        EthashBlockData,
+        EthashBlockData<M>,
         GasStateBlockData,
         StateChangeBlockData {
 
   @override
-  Hash256 computeHash() {
-    // TODO compute hash
-    return new Hash256(new ByteData.view(new Uint8List(32).buffer));
+  Hash256 computeHash(M meta) {
+    return new Hash256(byteView(encodeRLP([
+      parentHash,
+      ommersHash,
+      beneficiary,
+      stateRoot.hash,
+      transactionsRoot.hash,
+      receiptsRoot.hash,
+      logsBloom,
+      difficulty,
+      number,
+      gasLimit,
+      gasUsed,
+      timestamp,
+      extraData,
+      meta.mixHash,
+      // nonce is encoded as 64 bits, not a var-size int.
+      uint8View(new Uint64List.fromList([nonce]))
+    ])));
   }
 
   @override
@@ -36,7 +52,7 @@ class StandardBlock<M extends StandardBlockMeta> extends Block<M>
     Hash256 hashOfTruncatedHeader = sha3_256(byteView(getTruncatedHeaderBytes()));
 
     return await verifyPOW(
-        meta.hashimotoEpoch, hashOfTruncatedHeader, this.hash);
+        meta.hashimotoEpoch, hashOfTruncatedHeader, meta.mixHash);
   }
 
   /// Get the header-bytes used to create the block,

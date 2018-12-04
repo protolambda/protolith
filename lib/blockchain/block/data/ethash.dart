@@ -1,13 +1,16 @@
 import 'dart:async';
 
 import 'package:protolith/blockchain/address.dart';
+import 'package:protolith/blockchain/block/block.dart';
 import 'package:protolith/blockchain/hash.dart';
+import 'package:protolith/blockchain/meta/blocks/meta.dart';
 import 'package:protolith/blockchain/pow/ethash/epoch.dart';
 import 'package:protolith/blockchain/pow/ethash/hashimoto.dart';
 
 import 'package:pointycastle/src/utils.dart';
 
-class EthashBlockData {
+mixin EthashBlockData<M extends BlockMeta> on Block<M> {
+
   ///DATA, 8 Bytes - nonce from mining POW.
   int nonce;
 

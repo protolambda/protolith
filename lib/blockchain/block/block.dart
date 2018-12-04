@@ -14,12 +14,14 @@ abstract class Block<M extends BlockMeta> {
   Hash256 _hash;
 
   /// DATA, 32 Bytes - hash of the block. null when its pending block.
-  Hash256 get hash => _hash ?? (_hash = computeHash());
+  Hash256 get hash => _hash;
 
   /// DATA, 32 Bytes - hash of the parent block.
   Hash256 parentHash;
 
-  Hash256 computeHash();
+  /// Compute the block-hash: this is the hash
+  ///  of the full RLP encoded header.
+  Hash256 computeHash(M meta);
 
   @override
   bool operator ==(Object other) =>
