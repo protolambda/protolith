@@ -1,9 +1,10 @@
-
+import 'package:protolith/blockchain/block/block.dart';
+import 'package:protolith/blockchain/meta/blocks/meta.dart';
 import 'package:protolith/blockchain/hash.dart';
 import 'package:protolith/blockchain/structures/merkle_tree.dart';
 import 'package:protolith/blockchain/tx/tx_compound.dart';
 
-class StateChangeBlockData {
+mixin StateChangeBlockData<M extends BlockMeta> on Block<M> {
 
   ///DATA, 32 Bytes - the root of the transaction trie of the block.
   MerkleTreeNode get transactionsRoot => transactions.root;

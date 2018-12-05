@@ -7,7 +7,7 @@ import 'package:protolith/blockchain/block/data/extra.dart';
 import 'package:protolith/blockchain/block/data/gas.dart';
 import 'package:protolith/blockchain/block/data/output.dart';
 import 'package:protolith/blockchain/block/data/state_change.dart';
-import 'package:protolith/blockchain/block/data/uncle.dart';
+import 'package:protolith/blockchain/block/data/ommer.dart';
 import 'package:protolith/blockchain/hash.dart';
 import 'package:protolith/blockchain/meta/blocks/standard_meta.dart';
 import 'package:protolith/crypto/data_util.dart';
@@ -18,14 +18,14 @@ class StandardBlock<M extends StandardBlockMeta> extends Block<M>
     with
         OutputBlockData,
         ExtraBlockData,
-        UncleBlockData,
+        OmmerBlockData,
         EthashBlockData<M>,
         GasStateBlockData,
         StateChangeBlockData {
 
   @override
   Hash256 computeHash(M meta) {
-    return new Hash256(byteView(encodeRLP([
+    return sha3_256(byteView(encodeRLP([
       parentHash,
       ommersHash,
       beneficiary,
