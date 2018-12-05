@@ -25,7 +25,7 @@ class StandardBlock<M extends StandardBlockMeta> extends Block<M>
 
   @override
   Hash256 computeHash(M meta) {
-    return sha3_256(byteView(encodeRLP([
+    this.hash = sha3_256(byteView(encodeRLP([
       parentHash,
       ommersHash,
       beneficiary,
@@ -43,6 +43,7 @@ class StandardBlock<M extends StandardBlockMeta> extends Block<M>
       // nonce is encoded as 64 bits, not a var-size int.
       uint8View(new Uint64List.fromList([nonce]))
     ])));
+    return this.hash;
   }
 
   @override

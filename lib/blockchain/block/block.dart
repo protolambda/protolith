@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:protolith/blockchain/hash.dart';
 import 'package:protolith/blockchain/meta/blocks/meta.dart';
+import 'package:protolith/blockchain/mixins/lazy_hashed.dart';
 
-abstract class Block<M extends BlockMeta> {
+abstract class Block<M extends BlockMeta> with LazyHashed<Hash256> {
 
   /// QUANTITY - the block number. null when its pending block.
   int number;
@@ -11,10 +12,8 @@ abstract class Block<M extends BlockMeta> {
   ///QUANTITY - the unix timestamp for when the block was collated.
   int timestamp;
 
-  Hash256 _hash;
-
   /// DATA, 32 Bytes - hash of the block. null when its pending block.
-  Hash256 get hash => _hash;
+  Hash256 get hash => super.hash;
 
   /// DATA, 32 Bytes - hash of the parent block.
   Hash256 parentHash;
