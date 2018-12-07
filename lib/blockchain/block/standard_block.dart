@@ -24,11 +24,11 @@ class StandardBlock<M extends StandardBlockMeta> extends Block<M>
         EthashBlockData<M>,
         GasStateBlockData,
         StateChangeBlockData,
-        RlpEncodeable<M>,
+        RlpEncodeable,
         RlpDecodeable {
 
   @override
-  List<dynamic> getRlpElements([M meta]) => [
+  List<dynamic> getRlpElements() => [
     parentHash,
     ommersHash,
     beneficiary,

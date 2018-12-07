@@ -1,7 +1,10 @@
 import 'dart:io';
 import 'dart:convert';
+import 'dart:typed_data';
+import 'package:convert/convert.dart';
 import 'package:protolith/blockchain/tx/standard_transaction.dart';
 import 'package:test/test.dart';
+
 void main() {
   Directory testsDir = new Directory('tests/fixtures/TransactionTests');
   testsDir.listSync().forEach((ent) {
@@ -15,10 +18,25 @@ void main() {
         // Default to just one case per file,
         //  but still a map; support multiple keys.
         caseSpec.forEach((k, v) {
+          // skip invalid cases/comments.
+          if (v is! Map) return;
+
+          StandardTransaction tx = StandardTransaction();
+          Uint8List txRlp = new Uint8List.fromList(hex.decode(v["rlp"]));
           test(k, () {
-            StandardTransaction tx = StandardTransaction();
+            // Load the rlp into a transaction instance.
+            // Errors if RLP elements cannot be transformed
+            tx.decodeRLP(txRlp);
+            // Now encode it again
+            // Errors if properties cannot be encoded.
+            Uint8List encoded = tx.encodeRLP();
+            // If they match: encoding/decoding were done correctly, if not;
+            //  at least one of them is incorrect.
+            //  The fixture name should point to the edge case.
+            expect(txRlp, encoded);
           });
         });
       });
     });
+  });
 }

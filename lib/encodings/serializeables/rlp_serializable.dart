@@ -3,11 +3,11 @@ import 'dart:typed_data';
 import 'package:protolith/encodings/rlp/rlp_encode.dart' as RlpEnc;
 import 'package:protolith/encodings/rlp/rlp_decode.dart' as RlpDec;
 
-mixin RlpEncodeable<M> {
+mixin RlpEncodeable {
 
-  Uint8List encodeRLP([M m]) => RlpEnc.encodeRLP(this.getRlpElements(m));
+  Uint8List encodeRLP() => RlpEnc.encodeRLP(this.getRlpElements());
 
-  List<dynamic> getRlpElements([M m]);
+  List<dynamic> getRlpElements();
 
 }
 

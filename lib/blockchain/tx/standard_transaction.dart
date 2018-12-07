@@ -14,11 +14,11 @@ import 'package:protolith/encodings/serializeables/rlp_serializable.dart';
 
 class StandardTransaction<M extends StandardBlockMeta> extends Transaction<M>
     with GasTxData<M>, InputTxData<M>, RoutingTxData<M>, ValueTxData<M>,
-        RlpEncodeable<M>,
+        RlpEncodeable,
         RlpDecodeable {
 
   @override
-  List<dynamic> getRlpElements([M meta]) => [
+  List<dynamic> getRlpElements() => [
     /// Internally we use 64 bit ints: pyEVM and Geth also ignore
     ///  the spec internally here, since it's just more efficient.
     /// For hashing we have to encode the values in 32 byte strings.
