@@ -18,6 +18,10 @@ mixin OmmerBlockData<M extends BlockMeta> on Block<M> {
   Hash256 get ommersHash =>
       _ommersHash ?? (_ommersHash = sha3_256(byteView(encodeRLP(ommers))));
 
+  /// Note: this is to force-overwrite a hash,
+  ///  this may invalidate the correspondence to the ommers list.
+  set ommersHash(Hash256 h) => _ommersHash = h;
+
   /// List of hashes of each ommer (uncle) block.
   UnmodifiableListView<Hash256> _ommers;
 

@@ -7,10 +7,7 @@ import 'package:pointycastle/src/utils.dart';
 
 const int ETH_ADDRESS_BYTES = 40;
 
-class EthereumAddress extends Web3.EthereumAddress
-    implements
-        Uint8ListSerializeable,
-        Uint8ListDeserializeable<EthereumAddress> {
+class EthereumAddress extends Web3.EthereumAddress implements Uint8ListEncodeable {
 
   EthereumAddress(String hex) : super(hex);
 
@@ -18,10 +15,9 @@ class EthereumAddress extends Web3.EthereumAddress
 
   EthereumAddress.fromPublicKey(BigInt number) : super.fromPublicKey(number);
 
+  EthereumAddress.fromUint8List(Uint8List input) : this.fromNumber(decodeBigInt(input));
+
   @override
   Uint8List toUint8List() => encodeBigIntPadded(this.number, ETH_ADDRESS_BYTES);
 
-  @override
-  EthereumAddress fromUint8List(Uint8List input) =>
-      new EthereumAddress.fromNumber(decodeBigInt(input));
 }

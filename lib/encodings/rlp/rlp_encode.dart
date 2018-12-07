@@ -83,7 +83,7 @@ class RlpEncoder extends Converter<dynamic, Uint8List> {
           ? encodeInt(input)
           : input is BigInt
           ? encodeBigInt(input)
-          : input is Uint8ListSerializeable
+          : input is Uint8ListEncodeable
           ? input.toUint8List()
           : throw new RlpEncodingException("Failed to encode to RLP: ${input}"));
     }

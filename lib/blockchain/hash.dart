@@ -7,7 +7,7 @@ import 'package:protolith/encodings/serializeables/uint8_list_serializeable.dart
 /**
  * 256 bit hash, immutable.
  */
-class Hash256 implements Uint8ListSerializeable, Uint8ListDeserializeable<Hash256> {
+class Hash256 implements Uint8ListEncodeable {
 
   /// Length of this type of hash.
   static const int BYTES = 32;
@@ -43,15 +43,12 @@ class Hash256 implements Uint8ListSerializeable, Uint8ListDeserializeable<Hash25
   @override
   Uint8List toUint8List() => uint8View(_data);
 
-  @override
-  Hash256 fromUint8List(Uint8List input) => new Hash256.fromTypedData(input);
-
 }
 
 /**
  * 512 bit hash, immutable.
  */
-class Hash512 implements Uint8ListSerializeable, Uint8ListDeserializeable<Hash512> {
+class Hash512 implements Uint8ListEncodeable {
 
   /// Length of this type of hash.
   static const int BYTES = 64;
@@ -86,8 +83,5 @@ class Hash512 implements Uint8ListSerializeable, Uint8ListDeserializeable<Hash51
 
   @override
   Uint8List toUint8List() => uint8View(_data);
-
-  @override
-  Hash512 fromUint8List(Uint8List input) => new Hash512.fromTypedData(input);
 
 }
