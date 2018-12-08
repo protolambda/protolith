@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:convert/convert.dart';
+
 export 'package:pointycastle/src/utils.dart';
 
 Uint8List uint8View(TypedData data, {skip: 0, length: null})
@@ -19,16 +21,29 @@ bool equalUint8lists(Uint8List a, Uint8List b) {
   return true;
 }
 
-Uint8List concatUint8Lists(Uint8List a, Uint8List b) =>
-  new Uint8List(a.length + b.length)
-    ..setRange(0, a.length, a)
-    ..setRange(a.length, a.length + b.length, b);
+Uint8List concatUint8Lists(Uint8List a, Uint8List b) {
+  Uint8List res = new Uint8List(a.length + b.length)
+    ..setRange(0, a.length, a)..setRange(a.length, a.length + b.length, b);
+  String out = hex.encode(res);
+  return res;
+}
 
 /// Converts the integer to a big-endian representation, padded to 32 bytes.
 Uint8List intAs32Bytes(int v) => uint8View(new Uint64List.fromList([0, 0, 0, v]));
 
 /// Convert a 32 byte array to a int (not a big int, max. cap 8 bytes)
-int intFrom32Bytes(Uint8List arr) => byteView(arr).getUint64(32 - 8);
+int intFrom32Bytes(Uint8List arr) {
+  if (arr.lengthInBytes > 32) throw Exception("Array is not 32 bytes or less.");
+  // Take last 8 bytes, array may be anything from 0 to 32 bytes.
+  int x = 0;
+  int i = arr.lengthInBytes - 8;
+  if (i < 0) i = 0;
+  for (; i < arr.lengthInBytes; i++) {
+    x <<= 8;
+    x |= arr[i];
+  }
+  return x;
+}
 
 final _byteMask = new BigInt.from(0xff);
 

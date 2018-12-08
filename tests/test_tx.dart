@@ -22,18 +22,35 @@ void main() {
           if (v is! Map) return;
 
           StandardTransaction tx = StandardTransaction();
-          Uint8List txRlp = new Uint8List.fromList(hex.decode(v["rlp"]));
+          // TODO: support testing all forks
+          String txHash = v["Homestead"]["hash"];
+          String txSender = v["Homestead"]["sender"];
+          bool succeeds = txHash != null && txSender != null;
           test(k, () {
-            // Load the rlp into a transaction instance.
-            // Errors if RLP elements cannot be transformed
-            tx.decodeRLP(txRlp);
-            // Now encode it again
-            // Errors if properties cannot be encoded.
-            Uint8List encoded = tx.encodeRLP();
-            // If they match: encoding/decoding were done correctly, if not;
-            //  at least one of them is incorrect.
-            //  The fixture name should point to the edge case.
-            expect(txRlp, encoded);
+            Uint8List txRlp;
+            expect(() {
+              txRlp = new Uint8List.fromList(hex.decode((v["rlp"] as String).replaceFirst("0x", "")));
+
+              // Load the rlp into a transaction instance.
+              // Errors if RLP elements cannot be transformed
+              tx.decodeRLP(txRlp);
+
+            }, succeeds ? returnsNormally : throws, verbose: true);
+
+            if (succeeds) {
+              // Now encode it again
+              // Errors if properties cannot be encoded.
+              Uint8List encoded = tx.encodeRLP();
+
+              // If they match: encoding/decoding were done correctly, if not;
+              //  at least one of them is incorrect.
+              //  The fixture name should point to the edge case.
+              expect(hex.encode(txRlp), hex.encode(encoded), verbose: true);
+              tx.computeHash(null);
+              String out = hex.encode(tx.hash.uint8list.toList());
+              // Check hash as well, if we have one.
+              if (txHash != null) expect(txHash, hex.encode(tx.hash.uint8list.toList()), verbose: true);
+            }
           });
         });
       });

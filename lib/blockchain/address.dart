@@ -5,7 +5,7 @@ import 'package:protolith/encodings/serializeables/uint8_list_serializeable.dart
 import 'package:web3dart/src/wallet/credential.dart' as Web3;
 import 'package:pointycastle/src/utils.dart';
 
-const int ETH_ADDRESS_BYTES = 40;
+const int ETH_ADDRESS_BYTES = 20;
 
 class EthereumAddress extends Web3.EthereumAddress implements Uint8ListEncodeable {
 
@@ -15,7 +15,10 @@ class EthereumAddress extends Web3.EthereumAddress implements Uint8ListEncodeabl
 
   EthereumAddress.fromPublicKey(BigInt number) : super.fromPublicKey(number);
 
-  EthereumAddress.fromUint8List(Uint8List input) : this.fromNumber(decodeBigInt(input));
+  factory EthereumAddress.fromUint8List(Uint8List input) {
+    if (input.lengthInBytes != ETH_ADDRESS_BYTES) throw Exception("Address byte byte array has incorrect length.");
+    return EthereumAddress.fromNumber(decodeBigInt(input));
+  }
 
   @override
   Uint8List toUint8List() => encodeBigIntPadded(this.number, ETH_ADDRESS_BYTES);
