@@ -1,6 +1,6 @@
 
 import 'package:protolith/blockchain/block/block.dart';
-import 'package:protolith/blockchain/chain/blockchain.dart';
+import 'package:protolith/blockchain/chain/block_chain.dart';
 import 'package:protolith/blockchain/flow/inputs/blocks/provider.dart';
 import 'package:protolith/blockchain/meta/blocks/meta.dart';
 

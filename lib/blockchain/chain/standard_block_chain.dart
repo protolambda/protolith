@@ -1,9 +1,9 @@
 
 import 'package:protolith/blockchain/block/standard_block.dart';
-import 'package:protolith/blockchain/chain/blockchain.dart';
+import 'package:protolith/blockchain/chain/block_chain.dart';
 import 'package:protolith/blockchain/meta/blocks/standard_meta.dart';
 
-class StandardChain<M extends StandardBlockMeta, B extends StandardBlock<M>> extends BlockChain<M, B> {
+class StandardBlockChain<M extends StandardBlockMeta, B extends StandardBlock<M>> extends BlockChain<M, B> {
 
   @override
   Future<M> getBlockMeta(int blockNum) async {

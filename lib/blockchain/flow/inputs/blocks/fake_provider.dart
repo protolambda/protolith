@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:protolith/blockchain/block/block.dart';
 import 'package:protolith/blockchain/block/standard_block.dart';
-import 'package:protolith/blockchain/chain/blockchain.dart';
+import 'package:protolith/blockchain/chain/block_chain.dart';
 import 'package:protolith/blockchain/flow/inputs/blocks/provider.dart';
 import 'package:protolith/blockchain/meta/blocks/standard_meta.dart';
 
