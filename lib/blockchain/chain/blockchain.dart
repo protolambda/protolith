@@ -33,6 +33,6 @@ class BlockChain<M extends BlockMeta, B extends Block<M>> {
   }
 
   /// To be overridden by subclasses to provide their own extended metadata.
-  BlockMeta getBlockMeta(int blockNum) => new BlockMeta(blockNum);
+  BlockMeta getBlockMeta(int blockNum) => new BlockMeta()..blockNum = blockNum;
 
 }

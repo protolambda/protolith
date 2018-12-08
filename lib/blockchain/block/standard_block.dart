@@ -65,7 +65,7 @@ class StandardBlock<M extends StandardBlockMeta> extends Block<M>
     (v) => number = v,
     (v) => gasLimit = v,
     (v) => gasUsed = v,
-    (v) => timestamp = intFrom32Bytes(v),
+    (v) => timestamp = intFromBytes(v),
     (v) => extraData = v,
     (v) => untrustedMixHash = Hash256.fromTypedData(v),
     // nonce is encoded as 64 bits, not a var-size int.

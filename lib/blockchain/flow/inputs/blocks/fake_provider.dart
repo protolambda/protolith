@@ -34,9 +34,8 @@ class FakeBlockProvider extends BlockProvider<StandardBlock> {
 
   @override
   Future<bool> requestBlocks(int startHeight, int endHeight) async {
-    for (int i = startHeight; i < endHeight; i++) {
-      _createdBlocks[i]
-    }
+    // TODO create blocks if not already created earlier.
+    // Then push them to the block subscription.
   }
 
 }

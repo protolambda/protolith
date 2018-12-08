@@ -1,6 +1,6 @@
 # Protolith
 
-Protolith is a compositional codebase to innovate with in the blockchain space.
+Protolith is a compositional codebase to innovate within the blockchain space.
 
 ## Rationale
 
@@ -22,17 +22,17 @@ Protolith aims to be:
 5) Platform-agnostic. Dart may not be the fastest language, but scaling and innovation is about the bigger picture of architecture.
  Dart enables others to run it on servers (DartVM), browsers (dart2js), and mobile (Flutter).
 
-## Getting Started
+## Getting Started / Installation
 
-// TODO
+This is an experiment in early stage, run/deploy wherever and however you would like.
+Discussions about features are welcome, but do not expect to have your use case supported from the very start.
 
-## Installation
+## Contributing
 
-// TODO
-
-## Contibuting
-
-// TODO
+This project is very much still an *experiment*, and is in constant change.
+With the ETHSingapore event the first blockchain spec implementation (other than default main-net)
+ on top of this codebase is prototyped; a sharded chain, simplified by abstracting away some of the 
+ less theoretically-rewarding components such as networking, and a DB.
 
 ## License
 
