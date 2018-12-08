@@ -40,5 +40,5 @@ MIT, see License file.
 
 ## Credits
 
-Original project by @protolambda
+Original project by @protolambda. Contributions/forks are welcome, please submit a PR upstream.
 
