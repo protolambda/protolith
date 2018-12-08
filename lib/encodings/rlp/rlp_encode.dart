@@ -47,21 +47,6 @@ class RlpEncoder extends Converter<dynamic, Uint8List> {
     }
   }
 
-  static Uint8List encodeInt(int x) {
-    // note the integer 0 has a bitlength of 0,
-    //  and is encoded as an empty uint8 list.
-    int bits = x.bitLength;
-    int len = (bits >> 3);
-    // if not divisible by 8, round up.
-    if (bits & 7 != 0) len++;
-    Uint8List res = new Uint8List(len);
-    // big-endian
-    for (int i = 0; i < len; i++) {
-      res[len - 1 - i] = (x >> (i << 3)) & 0xFF;
-    }
-    return res;
-  }
-
   /// Convert any input that is either:
   ///  - a [String]
   ///  - a [int]

@@ -31,12 +31,36 @@ Uint8List concatUint8Lists(Uint8List a, Uint8List b) {
 /// Converts the integer to a big-endian representation, padded to 32 bytes.
 Uint8List intAs32Bytes(int v) => uint8View(new Uint64List.fromList([0, 0, 0, v]));
 
-/// Convert a 32 byte array to a int (not a big int, max. cap 8 bytes)
-int intFrom32Bytes(Uint8List arr) {
-  if (arr.lengthInBytes > 32) throw Exception("Array is not 32 bytes or less.");
-  // Take last 8 bytes, array may be anything from 0 to 32 bytes.
+/// Encode an integer as a byte-array, but limit the result to [maxLen] bytes.
+/// Throws an exception if it is more.
+Uint8List encodeIntMaxLen(int v, maxLen) {
+  Uint8List res = encodeInt(v);
+  if (res.lengthInBytes > maxLen)
+    throw Exception("Encoding may not be bigger than $maxLen bytes.");
+  return res;
+}
+
+Uint8List encodeInt(int x) {
+  // note the integer 0 has a bitlength of 0,
+  //  and is encoded as an empty uint8 list.
+  int bits = x.bitLength;
+  int len = (bits >> 3);
+  // if not divisible by 8, round up.
+  if (bits & 7 != 0) len++;
+  Uint8List res = new Uint8List(len);
+  // big-endian
+  for (int i = 0; i < len; i++) {
+    res[len - 1 - i] = (x >> (i << 3)) & 0xFF;
+  }
+  return res;
+}
+
+/// Convert a byte array to a int (not a big int, max. cap 8 bytes)
+int intFromBytes(Uint8List arr) {
+  // Take last 8 bytes
   int x = 0;
   int i = arr.lengthInBytes - 8;
+  // there may be less than 8 bytes.
   if (i < 0) i = 0;
   for (; i < arr.lengthInBytes; i++) {
     x <<= 8;
@@ -64,4 +88,11 @@ Uint8List encodeBigIntPadded(BigInt v, int outBytesLen) {
     work = work >> 8;
   }
   return result;
+}
+
+/// pass-trhough function to easily verify lengths of arrays.
+Uint8List limitSize(Uint8List v, {int minLen: 0, int maxLen: 32}) {
+  if (v.lengthInBytes < minLen) throw Exception("Uint8list is too short! (${v.lengthInBytes} instead of min. $minLen)");
+  if (v.lengthInBytes > maxLen) throw Exception("Uint8list is too long! (${v.lengthInBytes} instead of max. $maxLen)");
+  return v;
 }

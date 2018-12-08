@@ -16,7 +16,7 @@ class EthereumAddress extends Web3.EthereumAddress implements Uint8ListEncodeabl
   EthereumAddress.fromPublicKey(BigInt number) : super.fromPublicKey(number);
 
   factory EthereumAddress.fromUint8List(Uint8List input) {
-    if (input.lengthInBytes != ETH_ADDRESS_BYTES) throw Exception("Address byte byte array has incorrect length.");
+    if (input.lengthInBytes != ETH_ADDRESS_BYTES) throw Exception("Address byte array has incorrect length: ${input.lengthInBytes}");
     return EthereumAddress.fromNumber(decodeBigInt(input));
   }
 

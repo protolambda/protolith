@@ -16,9 +16,9 @@ mixin RoutingTxData<M extends BlockMeta> on Transaction<M> {
   EthereumAddress get to => _to;
   set to(EthereumAddress addr) => _to = hashed(addr);
 
-  int _nonce;
+  BigInt _nonce;
   /// QUANTITY - the number of transactions made by the sender prior to this one.
-  int get nonce => _nonce;
-  set nonce(int v) => _nonce = hashed(v);
+  BigInt get nonce => _nonce;
+  set nonce(BigInt v) => _nonce = hashed(v);
 
 }

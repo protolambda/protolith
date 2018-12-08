@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:convert/convert.dart';
 import 'package:protolith/blockchain/tx/standard_transaction.dart';
+import 'package:protolith/encodings/rlp/rlp_decode.dart' as RlpDec;
 import 'package:test/test.dart';
 
 void main() {
@@ -35,6 +36,9 @@ void main() {
               // Errors if RLP elements cannot be transformed
               tx.decodeRLP(txRlp);
 
+              // Return a nicely formatted structured version of the decoded RLP, before interpretation/validation.
+              // For debugging failed tests.
+              return (RlpDec.decodeRLP(txRlp) as List<dynamic>).map((v) => v.toString().replaceAll(new RegExp(r"\s"), " ")).join("\n");
             }, succeeds ? returnsNormally : throws, verbose: true);
 
             if (succeeds) {
@@ -47,7 +51,6 @@ void main() {
               //  The fixture name should point to the edge case.
               expect(hex.encode(txRlp), hex.encode(encoded), verbose: true);
               tx.computeHash(null);
-              String out = hex.encode(tx.hash.uint8list.toList());
               // Check hash as well, if we have one.
               if (txHash != null) expect(txHash, hex.encode(tx.hash.uint8list.toList()), verbose: true);
             }
