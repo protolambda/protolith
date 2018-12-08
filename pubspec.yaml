@@ -1,6 +1,6 @@
 name: protolith
 description: Protolith, a compositional base for blockchains.
-version: 1.0.0
+version: 0.0.1
 homepage: https://github.com/protolambda/protolith
 author: proto <proto@protolambda.com>
 license: MIT
