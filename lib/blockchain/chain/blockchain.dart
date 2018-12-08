@@ -25,14 +25,24 @@ class BlockChain<M extends BlockMeta, B extends Block<M>> {
   }
 
   Future addBlock(B block) async {
-    if (await block.validate(getBlockMeta(block.number))) {
+    // Require that the block meets the requirements in the context of
+    // connecting it to the currently synced chain, and validate the block itself.
+    if (await validateNewBlock(block) && await block.validate(await getBlockMeta(block.number))) {
       await db.putBlock(block);
     } else {
       throw InvalidBlockException<M, B>(block, "Block is invalid, cannot add it to the DB.");
     }
   }
 
+  /// Future throws if block is invalid.
+  Future validateNewBlock(B block) async {
+    if (block.number > blockHeight) throw Exception("Node is at ${blockHeight}, cannot validate block ${block.number}");
+    B prev = await getBlock(block.hash);
+    if (prev == null) throw Exception("Block parent hash is unknown.");
+    // TODO: timestamp validation is ignored, timestamps are manipulated for demo purposes.
+  }
+
   /// To be overridden by subclasses to provide their own extended metadata.
-  BlockMeta getBlockMeta(int blockNum) => new BlockMeta()..blockNum = blockNum;
+  Future<M> getBlockMeta(int blockNum) async => new BlockMeta()..blockNum = blockNum;
 
 }
