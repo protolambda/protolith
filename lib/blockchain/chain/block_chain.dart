@@ -28,10 +28,15 @@ class BlockChain<M extends BlockMeta, B extends Block<M>> {
     // Require that the block meets the requirements in the context of
     // connecting it to the currently synced chain, and validate the block itself.
     if (await validateNewBlock(block) && await block.validate(await getBlockMeta(block.number))) {
-      await db.putBlock(block);
+      return await addValidBlock(block);
     } else {
       throw InvalidBlockException<M, B>(block, "Block is invalid, cannot add it to the DB.");
     }
+  }
+
+  /// Just force-adds the block, it must be valid.
+  Future addValidBlock(B block) async {
+    await db.putBlock(block);
   }
 
   /// Future throws if block is invalid.

@@ -96,3 +96,17 @@ Uint8List limitSize(Uint8List v, {int minLen: 0, int maxLen: 32}) {
   if (v.lengthInBytes > maxLen) throw Exception("Uint8list is too long! (${v.lengthInBytes} instead of max. $maxLen)");
   return v;
 }
+
+bool listElementwiseComparison<T>(List<T> as, List<T> bs) {
+  if (as.length != bs.length) return false;
+  for (int i = 0; i < as.length; i++) {
+    if (as[i] != bs[i]) return false;
+  }
+  return true;
+}
+
+repeatFn<X>(X fn(X x)) {
+  innerRepeat(x, n) => n == 0 ? x : innerRepeat(fn(x), n - 1);
+  return innerRepeat;
+}
+
