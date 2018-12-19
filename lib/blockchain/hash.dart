@@ -1,6 +1,7 @@
 
 import 'dart:typed_data';
 
+import 'package:convert/convert.dart';
 import 'package:protolith/crypto/data_util.dart';
 import 'package:protolith/encodings/serializeables/uint8_list_serializeable.dart';
 
@@ -16,9 +17,7 @@ class Hash256 implements Uint8ListEncodeable {
 
   UnmodifiableByteDataView get data => _data;
 
-  Uint8List get uint8list => _data.buffer.asUint8List(
-      _data.offsetInBytes, _data.lengthInBytes
-  );
+  Uint8List get uint8list => toUint8List();
 
   Hash256.fromTypedData(TypedData input) : this(
       new ByteData.view(input.buffer, input.offsetInBytes, input.lengthInBytes));
@@ -43,6 +42,9 @@ class Hash256 implements Uint8ListEncodeable {
   @override
   Uint8List toUint8List() => uint8View(_data);
 
+  @override
+  String toString() => hex.encode(uint8list);
+
 }
 
 /**
@@ -57,9 +59,7 @@ class Hash512 implements Uint8ListEncodeable {
 
   UnmodifiableByteDataView get data => _data;
 
-  Uint8List get uint8list => _data.buffer.asUint8List(
-      _data.offsetInBytes, _data.lengthInBytes
-  );
+  Uint8List get uint8list => toUint8List();
 
   Hash512.fromTypedData(TypedData input) : this(
       new ByteData.view(input.buffer, input.offsetInBytes, input.lengthInBytes));
@@ -83,5 +83,8 @@ class Hash512 implements Uint8ListEncodeable {
 
   @override
   Uint8List toUint8List() => uint8View(_data);
+
+  @override
+  String toString() => hex.encode(uint8list);
 
 }
