@@ -27,7 +27,7 @@ mixin EthashBlockData<M extends BlockMeta> on Block<M> {
   ///QUANTITY - integer of the difficulty for this block.
   BigInt difficulty;
 
-  ///QUANTITY - integer of the total difficulty of the chain until this block.
+  ///QUANTITY - integer of the total difficulty of the chain until this block. (exclusive this block!)
   BigInt totalDifficulty;
 
   Future<bool> verifyPOW(

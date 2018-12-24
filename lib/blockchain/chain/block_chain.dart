@@ -3,19 +3,16 @@ import 'dart:async';
 
 import 'package:protolith/blockchain/block/block.dart';
 import 'package:protolith/blockchain/db/blocks/db.dart';
-import 'package:protolith/blockchain/exceptions/invalid_block.dart';
+import 'package:protolith/blockchain/exceptions/unknown_block.dart';
 import 'package:protolith/blockchain/hash.dart';
 import 'package:protolith/blockchain/meta/blocks/meta.dart';
 
 class BlockChain<M extends BlockMeta, B extends Block<M>> {
 
-  int blockHeight = 0;
+  Hash256 _headBlockHash;
+  Hash256 get headBlockHash => _headBlockHash;
 
-  Future<B> get lastBlock async {
-    Hash256 hash = (await db.getBlocksByNumber(blockHeight))?.first;
-    if (hash != null) return await db.getBlockByHash(hash);
-    return null;
-  }
+  Future<B> get headBlock => db.getBlockByHash(headBlockHash);
 
   // Public field, it should be easy to change the DB.
   BlockDB<M,B> db;
@@ -26,28 +23,37 @@ class BlockChain<M extends BlockMeta, B extends Block<M>> {
 
   Future addBlock(B block) async {
     // Require that the block meets the requirements in the context of
-    // connecting it to the currently synced chain, and validate the block itself.
-    if (await validateNewBlock(block) && await block.validate(await getBlockMeta(block.number))) {
-      return await addValidBlock(block);
-    } else {
-      throw InvalidBlockException<M, B>(block, "Block is invalid, cannot add it to the DB.");
-    }
+    // connecting it to the currently synced chain, and validate the block.
+    // Validation throws if the block is invalid.
+    await block.validate(this);
+    // It's validated, now add it.
+    return await addValidBlock(block);
   }
 
   /// Just force-adds the block, it must be valid.
   Future addValidBlock(B block) async {
     await db.putBlock(block);
+    if (await forkChoice(await headBlock, block)) {
+      _headBlockHash = block.hash;
+    }
   }
 
-  /// Future throws if block is invalid.
-  Future validateNewBlock(B block) async {
-    if (block.number > blockHeight) throw Exception("Node is at ${blockHeight}, cannot validate block ${block.number}");
-    B prev = await getBlock(block.hash);
-    if (prev == null) throw Exception("Block parent hash is unknown.");
-    // TODO: timestamp validation is ignored, timestamps are manipulated for demo purposes.
+  /// Returns true if [block] should be the new head of the chain.
+  /// Override this to implement consensus systems.
+  /// E.g. POW would choice the head based on total accumulated POW.
+  Future<bool> forkChoice(B head, B block) async {
+    /// Simple base implementation: just pick the highest block number.
+    return block.number > head.number;
   }
 
+  /// Returns the post-state for the block [blockHash].
   /// To be overridden by subclasses to provide their own extended metadata.
-  Future<M> getBlockMeta(int blockNum) async => new BlockMeta()..blockNum = blockNum;
+  Future<M> getBlockMeta(Hash256 hash) async {
+    // Check if the block is known. If not, we cannot construct a post-state for the block.
+    B b = await this.getBlock(hash);
+    if (b == null) throw UnknownBlockException(hash, "Block hash is unknown. Cannot build state for it.");
+
+    return BlockMeta()..blockNum = b.number;
+  }
 
 }

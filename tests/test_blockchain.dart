@@ -2,8 +2,12 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:protolith/blockchain/address.dart';
+import 'package:protolith/blockchain/block/standard_block.dart';
+import 'package:protolith/blockchain/chain/standard_block_chain.dart';
 import 'package:protolith/blockchain/hash.dart';
+import 'package:protolith/blockchain/meta/blocks/standard_meta.dart';
 import 'package:protolith/encodings/rlp/rlp_decode.dart' as RlpDec;
+import 'package:protolith/network/standard_network.dart';
 import 'package:test/test.dart';
 
 import 'json_util.dart';
@@ -25,6 +29,8 @@ void main() {
           test(k, () {
             CaseJSON decodedCase = CaseJSON.fromJSON(k, v);
             // TODO create chain
+            var eth1Chain = new StandardBlockChain<StandardBlockMeta, StandardBlock<StandardBlockMeta>>();
+            var eth1Network = new StandardNetwork(1, 1, eth1Chain);
             // TODO apply genesis header
             // TODO apply pre state
             // TODO add blocks from test case

@@ -79,7 +79,10 @@ class StandardBlock<M extends StandardBlockMeta> extends Block<M>
   }
 
   @override
-  Future<bool> validate(M meta) async {
+  Future<bool> validateWithState(M meta) async {
+    // Make sure the common block things are valid.
+    super.validateWithState(meta);
+
     // TODO check validity before checking POW
 
     Hash256 hashOfTruncatedHeader = sha3_256(byteView(getTruncatedHeaderBytes()));

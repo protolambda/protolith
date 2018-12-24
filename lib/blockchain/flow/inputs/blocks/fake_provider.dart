@@ -22,7 +22,7 @@ class FakeBlockProvider extends BlockProvider<StandardBlock> {
 
   Future<Block> _newBlock() async {
     int time = new DateTime.now().millisecondsSinceEpoch;
-    StandardBlock previous = await _chain.lastBlock;
+    StandardBlock previous = await _chain.headBlock;
     // TODO improve debug block creation
     StandardBlock block = StandardBlock()
       ..timestamp = time

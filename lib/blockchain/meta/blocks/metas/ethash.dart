@@ -1,5 +1,4 @@
 
-import 'package:protolith/blockchain/hash.dart';
 import 'package:protolith/blockchain/meta/blocks/meta.dart';
 import 'package:protolith/blockchain/pow/ethash/epoch.dart';
 
