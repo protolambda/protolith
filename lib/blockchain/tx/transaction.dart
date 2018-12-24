@@ -1,9 +1,11 @@
 import 'package:protolith/blockchain/hash.dart';
 import 'package:protolith/blockchain/meta/blocks/meta.dart';
+import 'package:protolith/blockchain/receipt/tx_receipt.dart';
 import 'package:protolith/crypto/ecdsa.dart';
 import 'package:protolith/blockchain/mixins/lazy_hashed.dart';
+import 'package:protolith/crypto/merkle_patricia.dart' as MP;
 
-abstract class Transaction<M extends BlockMeta> with LazyHashed<Hash256> {
+abstract class Transaction<M extends BlockMeta> with LazyHashed<Hash256>, MP.TrieValue {
 
   Hash256 _blockHash;
   /// DATA, 32 Bytes - hash of the block where this transaction was in. null when its pending.
@@ -31,5 +33,9 @@ abstract class Transaction<M extends BlockMeta> with LazyHashed<Hash256> {
   /// Compute the block-hash: this is the hash
   ///  of the full RLP encoded header.
   Hash256 computeHash(M meta);
+
+  /// Applies the changes made in this transaction to [meta]
+  Future<TransactionReceipt> applyToMeta(M meta);
+
 
 }

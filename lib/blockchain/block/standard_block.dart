@@ -11,6 +11,9 @@ import 'package:protolith/blockchain/block/data/state_change.dart';
 import 'package:protolith/blockchain/block/data/ommer.dart';
 import 'package:protolith/blockchain/hash.dart';
 import 'package:protolith/blockchain/meta/blocks/standard_meta.dart';
+import 'package:protolith/blockchain/receipt/tx_receipt.dart';
+import 'package:protolith/blockchain/structures/trie_compound.dart';
+import 'package:protolith/blockchain/tx/standard_transaction.dart';
 import 'package:protolith/crypto/data_util.dart';
 import 'package:protolith/crypto/sha3.dart';
 import 'package:protolith/encodings/rlp/rlp_encode.dart';
@@ -23,7 +26,7 @@ class StandardBlock<M extends StandardBlockMeta> extends Block<M>
         OmmerBlockData,
         EthashBlockData<M>,
         GasStateBlockData,
-        StateChangeBlockData,
+        StateChangeBlockData<M, StandardTransaction<M>>,
         RlpEncodeable,
         RlpDecodeable {
 
@@ -32,9 +35,9 @@ class StandardBlock<M extends StandardBlockMeta> extends Block<M>
     parentHash,
     ommersHash,
     beneficiary,
-    stateRoot.hash,
-    transactionsRoot.hash,
-    receiptsRoot.hash,
+    stateRoot,
+    transactions.root,
+    receipts.root,
     logsBloom,
     difficulty,
     number,
@@ -56,9 +59,9 @@ class StandardBlock<M extends StandardBlockMeta> extends Block<M>
     (v) => parentHash = Hash256.fromTypedData(v),
     (v) => ommersHash = Hash256.fromTypedData(v),
     (v) => beneficiary = EthereumAddress.fromUint8List(v),
-    (v) => stateRoot.hash = Hash256.fromTypedData(v),
-    (v) => transactionsRoot.hash = Hash256.fromTypedData(v),
-    (v) => receiptsRoot.hash = Hash256.fromTypedData(v),
+    (v) => stateRoot = Hash256.fromTypedData(v),
+    (v) => transactions = new TrieCompound<StandardTransaction<M>>([], untrustedHash: Hash256.fromTypedData(v)),
+    (v) => receipts = new TrieCompound<TransactionReceipt>([], untrustedHash: Hash256.fromTypedData(v)),
     // not strictly a hash, but otherwise the same for our purposes.
     (v) => logsBloom = Hash256.fromTypedData(v),
     (v) => difficulty = v,
@@ -90,6 +93,14 @@ class StandardBlock<M extends StandardBlockMeta> extends Block<M>
     return await verifyPOW(meta.hashimotoEpoch, hashOfTruncatedHeader);
   }
 
+  /// Applies the implications of this block to [meta].
+  @override
+  Future applyToMeta(M meta) async {
+    await super.applyToMeta(meta);
+
+    await applyStateChangesToMeta(meta);
+  }
+
   /// Get the header-bytes used to create the block,
   ///  without the mixHash and nonce.
   Uint8List getTruncatedHeaderBytes() =>
@@ -97,9 +108,9 @@ class StandardBlock<M extends StandardBlockMeta> extends Block<M>
       parentHash,
       ommersHash,
       beneficiary,
-      stateRoot.hash,
-      transactionsRoot.hash,
-      receiptsRoot.hash,
+      stateRoot,
+      transactions.root,
+      receipts.root,
       logsBloom,
       difficulty,
       number,

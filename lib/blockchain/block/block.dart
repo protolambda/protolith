@@ -49,4 +49,12 @@ abstract class Block<M extends BlockMeta> with LazyHashed<Hash256> {
 
     // TODO: timestamp validation is ignored, timestamps are manipulated for demo purposes.
   }
+
+  /// Applies the implications of this block to [meta].
+  Future applyToMeta(M meta) async {
+    if (meta.blockNum + 1 != number)
+      throw Exception(
+          "Cannot apply block changes at height ${number} to meta at ${meta.blockNum}");
+    meta.blockNum = number;
+  }
 }

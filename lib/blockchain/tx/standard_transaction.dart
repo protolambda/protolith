@@ -1,7 +1,10 @@
 
+import 'dart:typed_data';
+
 import 'package:protolith/blockchain/address.dart';
 import 'package:protolith/blockchain/hash.dart';
 import 'package:protolith/blockchain/meta/blocks/standard_meta.dart';
+import 'package:protolith/blockchain/receipt/standard_tx_receipt.dart';
 import 'package:protolith/blockchain/tx/transaction.dart';
 import 'package:protolith/blockchain/tx/data/gas.dart';
 import 'package:protolith/blockchain/tx/data/input.dart';
@@ -53,5 +56,17 @@ class StandardTransaction<M extends StandardBlockMeta> extends Transaction<M>
     this.hash = sha3_256(byteView(this.encodeRLP()));
     return this.hash;
   }
+
+  @override
+  Future<StandardTransactionReceipt> applyToMeta(M meta) async {
+    // TODO create receipt
+  }
+
+  @override
+  Uint8List get trieData => this.encodeRLP();
+
+  @override
+  Uint8List get trieKey => null;
+
 
 }
