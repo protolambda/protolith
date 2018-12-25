@@ -2,7 +2,7 @@
 import 'dart:async';
 
 import 'package:protolith/blockchain/block/block.dart';
-import 'package:protolith/blockchain/db/blocks/db.dart';
+import 'package:protolith/blockchain/db/blocks/block_db.dart';
 import 'package:protolith/blockchain/exceptions/unknown_block.dart';
 import 'package:protolith/blockchain/hash.dart';
 import 'package:protolith/blockchain/meta/blocks/meta.dart';
