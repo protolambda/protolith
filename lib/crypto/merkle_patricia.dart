@@ -129,7 +129,7 @@ class Extension extends Node {
 
   Uint8List _path;
 
-  /// Returns a list of nibble keys, each occupying one byte for quick index based access.
+  /// Returns a list of *nibble* keys, each occupying one byte for quick index based access.
   List<int> get path => new UnmodifiableListView<int>(_path);
 
   Node _inner;
@@ -139,35 +139,34 @@ class Extension extends Node {
   set inner(Node n) {
     _inner = n;
     _hash = null;
-    if (keyDepth + path.length != inner.keyDepth) throw new Exception("Path cannot connect extension node with referenced node, invalid length.");
+    if (keyDepth + _path.length != inner.keyDepth) throw new Exception("Path cannot connect extension node with referenced node, invalid length.");
   }
 
   Extension(int keyDepth, this._path, this._inner) : super(keyDepth);
 
   @override
   Hash256 computeHash() {
-    // TODO encode path
-    return sha3_256(byteView(encodeRLP([_path, inner.hash])));
+    return sha3_256(byteView(encodeRLP([encodeCompactPath(path, _EXTENSION_PATH), inner.hash])));
   }
 
   @override
   Node insert(TrieValue vIn) {
     int commonKeysLen = 0;
-    for (int i = 0; i < path.length && (keyDepth + i < vIn.trieKeyLen); i++) {
-      if (this.path[i] != vIn[keyDepth + i]) break;
+    for (int i = 0; i < _path.length && (keyDepth + i < vIn.trieKeyLen); i++) {
+      if (_path[i] != vIn[keyDepth + i]) break;
       commonKeysLen++;
     }
 
     if (commonKeysLen == 0) {
       Branch res = Branch(this.keyDepth);
-      res[this.path[0]] = this.inner;
+      res[_path[0]] = this.inner;
       res.insert(vIn);
       return res;
     } else if (keyDepth + commonKeysLen == MAX_KEY_DEPTH) {
       // technically this should never happen,
       //  as this extension node should be a Leaf in this case.
       return Leaf(keyDepth, vIn);
-    } else if (path.length == commonKeysLen) {
+    } else if (_path.length == commonKeysLen) {
       inner = inner.insert(vIn);
       return this;
     } else {
@@ -175,11 +174,11 @@ class Extension extends Node {
       // Prepare the branch: we inject the inner node manually into it,
       //  based on the path it had in this extension node.
       Branch res = Branch(this.keyDepth + commonKeysLen);
-      res[path[commonKeysLen]] = this.inner;
+      res[_path[commonKeysLen]] = this.inner;
       // Also add the new value
       res.insert(vIn);
       // Now shorten this extension so that it only covers the path up to the branch.
-      this._path = path.sublist(0, commonKeysLen);
+      this._path = _path.sublist(0, commonKeysLen);
       // overwrite the inner node (this also resets the hash of this node)
       this.inner = res;
       return this;
@@ -192,8 +191,7 @@ class Leaf extends Node {
 
   @override
   Hash256 computeHash() {
-    // TODO encode path
-    return sha3_256(byteView(encodeRLP([path, v.trieData])));
+    return sha3_256(byteView(encodeRLP([encodeCompactPath(path, _LEAF_PATH), v.trieData])));
   }
 
   List<int> get path => new UnmodifiableListView<int>(new List.generate(v.trieKeyLen, (i) => v[i]));
@@ -228,4 +226,34 @@ class Leaf extends Node {
       }
     }
   }
+}
+
+/// pathType = 0 for extension nodes.
+/// (See compact encoding doc for Merkle Patricia trees)
+const int _EXTENSION_PATH = 0;
+/// pathType = 2 for leaf nodes.
+/// (See compact encoding doc for Merkle Patricia trees)
+const int _LEAF_PATH = 2;
+
+/// [path] is the path, a list of nibbles, to encode into a compact byte array.
+/// [pathType] is a flag offset used to tweak the encoding,
+///   see [_EXTENSION_PATH] and [_LEAF_PATH].
+Uint8List encodeCompactPath(List<int> path, int pathType) {
+
+  bool odd = path.length & 1 == 1;
+  // odd length: (2n + 1) >> 1 = n.
+  //    +1 for flag + leftover nibble
+  // even length: 2n >> 1 = n.
+  //    +1 for flag + padding nibble
+  int len = (path.length >> 1) + 1;
+  Uint8List res = new Uint8List(len);
+  int i = 0;
+  // Add padding depending on length.
+  // Combine nibbles into byte array.
+  for (int v in (odd ? [1 + pathType] : [pathType, 0]).followedBy(path)) {
+    if (i & 1 == 0) res[i] = (v << 4);
+    else res[i] |= v;
+    i++;
+  }
+  return res;
 }
