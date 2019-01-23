@@ -93,12 +93,12 @@ class StandardBlock<M extends StandardBlockMeta> extends Block<M>
     return await verifyPOW(meta.hashimotoEpoch, hashOfTruncatedHeader);
   }
 
-  /// Applies the implications of this block to [meta].
+  /// Applies the implications of this block to [delta].
   @override
-  Future applyToMeta(M meta) async {
-    await super.applyToMeta(meta);
+  Future applyToDelta(M delta) async {
+    await super.applyToDelta(delta);
 
-    await applyStateChangesToMeta(meta);
+    await applyStateChanges(delta);
   }
 
   /// Get the header-bytes used to create the block,

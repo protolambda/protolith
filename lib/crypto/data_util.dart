@@ -105,6 +105,17 @@ bool listElementwiseComparison<T>(List<T> as, List<T> bs) {
   return true;
 }
 
+/// returns true if [a] and [b] are equal.
+typedef bool BinaryComparator<T>(T a, T b);
+
+bool listElementwiseComparisonFn<T>(List<T> as, List<T> bs, BinaryComparator<T> cFn) {
+  if (as.length != bs.length) return false;
+  for (int i = 0; i < as.length; i++) {
+    if (!cFn(as[i], bs[i])) return false;
+  }
+  return true;
+}
+
 repeatFn<X>(X fn(X x)) {
   innerRepeat(x, n) => n == 0 ? x : innerRepeat(fn(x), n - 1);
   return innerRepeat;

@@ -7,9 +7,9 @@ import 'package:protolith/blockchain/db/meta_data/meta_data_db.dart';
 mixin NonceBlockMeta on BlockMeta {
 
   Future<int> getNonce(EthereumAddress address) =>
-      db.getData(MetaDataKey("nonce", [address.toUint8List()])).then(intFromBytes);
+      db.getData(MetaDataKey("nonce", hash, [address.toUint8List()])).then(intFromBytes);
 
   Future setNonce(EthereumAddress address, int nonce) =>
-      db.putData(MetaDataKey("nonce", [address.toUint8List()]), encodeInt(nonce));
+      db.putData(MetaDataKey("nonce", hash, [address.toUint8List()]), encodeInt(nonce));
 
 }

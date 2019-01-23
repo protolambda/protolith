@@ -1,3 +1,5 @@
+import 'package:protolith/blockchain/db/meta_data/meta_data_db.dart';
+import 'package:protolith/blockchain/hash.dart';
 import 'package:protolith/blockchain/meta/blocks/meta.dart';
 import 'package:protolith/blockchain/meta/blocks/metas/ethash.dart';
 import 'package:protolith/blockchain/meta/blocks/metas/code.dart';
@@ -13,5 +15,6 @@ class StandardBlockMeta extends BlockMeta
         NonceBlockMeta,
         ValueBlockMeta {
 
-
+  StandardBlockMeta(Hash256 hash, int blockNum, MetaDataDB db)
+      : super(hash, blockNum, db);
 }

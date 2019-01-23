@@ -9,9 +9,9 @@ import 'package:protolith/blockchain/db/meta_data/meta_data_db.dart';
 mixin CodeBlockMeta<T extends StandardTransaction> on BlockMeta {
 
   Future<Uint8List> getCode(EthereumAddress address) =>
-    db.getData(MetaDataKey("code", [address.toUint8List()]));
+    db.getData(MetaDataKey("code", hash, [address.toUint8List()]));
 
   Future setCode(EthereumAddress address, Uint8List code) =>
-    db.putData(MetaDataKey("code", [address.toUint8List()]), code);
+    db.putData(MetaDataKey("code", hash, [address.toUint8List()]), code);
 
 }

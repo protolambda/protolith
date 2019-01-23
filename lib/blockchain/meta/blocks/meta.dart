@@ -1,15 +1,16 @@
 
 import 'package:protolith/blockchain/db/meta_data/meta_data_db.dart';
+import 'package:protolith/blockchain/hash.dart';
 
+/// MetaData view of the post-state of a given block.
 class BlockMeta {
 
-  int blockNum;
+  final Hash256 hash;
 
-  MetaDataDB db;
+  final int blockNum;
 
-  BlockMeta clone() {
-    // TODO: clone DB?
-    return new BlockMeta()..blockNum = blockNum;
-  }
+  final MetaDataDB db;
+
+  BlockMeta(this.hash, this.blockNum, this.db);
 
 }

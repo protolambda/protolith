@@ -23,17 +23,17 @@ mixin StateChangeBlockData<M extends BlockMeta, T extends Transaction<M>> on Blo
   /// Not strictly a hash, but also an unmodifiable 256 bit value.
   Hash256 logsBloom;
 
-  Future applyStateChangesToMeta(M meta) async {
+  Future applyStateChanges(M delta) async {
     // Apply all transaction changes
     // (one for one, a standard state change is strictly sequential)
     List<TransactionReceipt> receipts = [];
     for (T t in transactions.values) {
-      receipts.add(await t.applyToMeta(meta));
+      receipts.add(await t.applyToDelta(delta));
     }
     this.receipts = new TrieCompound(receipts, untrustedHash: this.receipts?.untrustedHash);
   }
 
-  Future<bool> verifyReceipts(M meta) {
-
+  Future verifyReceipts(M meta) async {
+    // TODO verify receipts, and hook it up
   }
 }

@@ -58,7 +58,7 @@ class StandardTransaction<M extends StandardBlockMeta> extends Transaction<M>
   }
 
   @override
-  Future<StandardTransactionReceipt> applyToMeta(M meta) async {
+  Future<StandardTransactionReceipt> applyToDelta(M delta) async {
     // TODO create receipt
   }
 

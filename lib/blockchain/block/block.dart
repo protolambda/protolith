@@ -36,25 +36,31 @@ abstract class Block<M extends BlockMeta> with LazyHashed<Hash256> {
     // Get the post-state of the previous block.
     // This will be the pre-state for this block.
     // (throws if no pre-state is available)
-    BlockMeta meta = await chain.getBlockMeta(parentHash);
+    BlockMeta pre = await chain.getBlockMeta(parentHash);
 
-    await validateWithState(meta);
+    await validateWithState(pre);
   }
 
   /// Future, throws if invalid
-  Future validateWithState(M meta) async {
-    if (number != meta.blockNum + 1)
+  Future validateWithState(M pre) async {
+    if (number != pre.blockNum + 1)
       throw InvalidBlockException<M, Block<M>>(this,
-          "Known pre state is at ${meta.blockNum}, block with number ${number} cannot be connected.");
+          "Known pre state is at ${pre.blockNum}, block with number ${number} cannot be connected.");
 
     // TODO: timestamp validation is ignored, timestamps are manipulated for demo purposes.
   }
 
-  /// Applies the implications of this block to [meta].
-  Future applyToMeta(M meta) async {
-    if (meta.blockNum + 1 != number)
+  /// Applies the implications of this block to [delta],
+  ///  a meta data DB view of the post-state of the parent block of this block,
+  ///  storing every change, to be finalized once the block processing is done
+  ///  (i.e. hash is known).
+  Future applyToDelta(M delta) async {
+    if (delta.blockNum + 1 != number)
       throw Exception(
-          "Cannot apply block changes at height ${number} to meta at ${meta.blockNum}");
-    meta.blockNum = number;
+          "Cannot apply block changes at height ${number} to meta at ${delta.blockNum}");
+    if (delta.hash != parentHash)
+      throw Exception(
+          "Cannot apply block changes in block, building on parent ${parentHash}, to meta at block ${delta.hash}");
+
   }
 }

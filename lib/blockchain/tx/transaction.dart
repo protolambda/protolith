@@ -34,8 +34,8 @@ abstract class Transaction<M extends BlockMeta> with LazyHashed<Hash256>, MP.Tri
   ///  of the full RLP encoded header.
   Hash256 computeHash(M meta);
 
-  /// Applies the changes made in this transaction to [meta]
-  Future<TransactionReceipt> applyToMeta(M meta);
+  /// Applies the changes made in this transaction to [delta]
+  Future<TransactionReceipt> applyToDelta(M delta);
 
 
 }
