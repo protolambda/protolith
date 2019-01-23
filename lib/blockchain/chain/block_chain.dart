@@ -28,11 +28,12 @@ class BlockChain<M extends BlockMeta, B extends Block<M>> {
     return blockDB.getBlockByHash(hash);
   }
 
+  /// Add the [block] to this chain. It may not be part of the canonical chain.
   Future addBlock(B block) async {
     // Require that the block meets the requirements in the context of
     // connecting it to the currently synced chain, and validate the block.
     // Validation throws if the block is invalid.
-    await block.validate(this);
+    await validateBlock(block);
     // Process the block, i.e. hash will become known, and chain state is updated.
     await processBlock(block);
     // It's validated, now add it.
@@ -45,6 +46,13 @@ class BlockChain<M extends BlockMeta, B extends Block<M>> {
     if (await forkChoice(await headBlock, block)) {
       _headBlockHash = block.hash;
     }
+  }
+
+  /// Validate the [block]
+  Future validateBlock(B block) async {
+    // most of the validation focuses on the block, approach it from there.
+    await block.validate(this);
+    // This function can be overridden to change or add validation behaviour.
   }
 
   /// Note: The supplied [block] is assumed to be validated.

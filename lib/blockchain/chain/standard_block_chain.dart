@@ -15,7 +15,6 @@ class StandardBlockChain<M extends StandardBlockMeta, B extends StandardBlock<M>
     if (b == null) throw UnknownBlockException(hash, "Block hash is unknown. Cannot build state for it.");
 
     // Create the view for the block.
-    // TODO: may want to memoize these?
     StandardBlockMeta meta = new StandardBlockMeta(b.hash, b.number, db ?? metaDB);
 
     return meta;
