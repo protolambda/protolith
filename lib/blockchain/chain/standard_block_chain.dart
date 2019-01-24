@@ -20,10 +20,20 @@ class StandardBlockChain<M extends StandardBlockMeta, B extends StandardBlock<M>
     return meta;
   }
 
-  /// Returns true if [block] should be the new head of the chain.
-  @override
-  Future<bool> forkChoice(B head, B block) async {
-    /// Just compare total POW.
-    return block.totalDifficulty + block.difficulty > head.totalDifficulty + block.difficulty;
+  /// Prepare the [meta] to validate and process the [block]
+  Future preProcessBlock(B block, M meta) async {
+    // TODO set-up hashimoto epoch for POW validation.
   }
+
+  /// Update the [meta] to handle the effect of processing [block].
+  /// The head of the chain is updated here.
+  Future postProcessBlock(B block, M meta) async {
+    // Check if the head needs to be updated
+    B head = await this.headBlock;
+    /// Simple base implementation: just pick the highest block number.
+    if(block.totalDifficulty + block.difficulty > head.totalDifficulty + block.difficulty) {
+      headBlockHash = head.hash;
+    }
+  }
+
 }

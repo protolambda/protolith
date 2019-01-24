@@ -9,6 +9,7 @@ import 'package:protolith/blockchain/block/data/gas.dart';
 import 'package:protolith/blockchain/block/data/output.dart';
 import 'package:protolith/blockchain/block/data/state_change.dart';
 import 'package:protolith/blockchain/block/data/ommer.dart';
+import 'package:protolith/blockchain/chain/block_chain.dart';
 import 'package:protolith/blockchain/hash.dart';
 import 'package:protolith/blockchain/meta/blocks/standard_meta.dart';
 import 'package:protolith/blockchain/receipt/tx_receipt.dart';
@@ -82,15 +83,12 @@ class StandardBlock<M extends StandardBlockMeta> extends Block<M>
   }
 
   @override
-  Future<bool> validateWithState(M meta) async {
-    // Make sure the common block things are valid.
-    super.validateWithState(meta);
-
+  Future validate(M pre) async {
     // TODO check validity before checking POW
 
     Hash256 hashOfTruncatedHeader = sha3_256(byteView(getTruncatedHeaderBytes()));
 
-    return await verifyPOW(meta.hashimotoEpoch, hashOfTruncatedHeader);
+    return await verifyPOW(pre.hashimotoEpoch, hashOfTruncatedHeader);
   }
 
   /// Applies the implications of this block to [delta].

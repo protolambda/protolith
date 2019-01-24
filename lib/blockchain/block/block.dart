@@ -32,17 +32,7 @@ abstract class Block<M extends BlockMeta> with LazyHashed<Hash256> {
   int get hashCode => hash.hashCode;
 
   /// Future, throws if invalid
-  Future validate(BlockChain<M, Block<M>> chain) async {
-    // Get the post-state of the previous block.
-    // This will be the pre-state for this block.
-    // (throws if no pre-state is available)
-    BlockMeta pre = await chain.getBlockMeta(parentHash);
-
-    await validateWithState(pre);
-  }
-
-  /// Future, throws if invalid
-  Future validateWithState(M pre) async {
+  Future validate(M pre) async {
     if (number != pre.blockNum + 1)
       throw InvalidBlockException<M, Block<M>>(this,
           "Known pre state is at ${pre.blockNum}, block with number ${number} cannot be connected.");

@@ -12,8 +12,8 @@ import 'package:protolith/blockchain/meta/blocks/meta.dart';
 
 class BlockChain<M extends BlockMeta, B extends Block<M>> {
 
-  Hash256 _headBlockHash;
-  Hash256 get headBlockHash => _headBlockHash;
+  /// Changing this hash will change the head of the chain.
+  Hash256 headBlockHash;
 
   Future<B> get headBlock => blockDB.getBlockByHash(headBlockHash);
 
@@ -30,53 +30,65 @@ class BlockChain<M extends BlockMeta, B extends Block<M>> {
 
   /// Add the [block] to this chain. It may not be part of the canonical chain.
   Future addBlock(B block) async {
+
+    // Create a temporary storage for changes
+    DeltaDB deltaDB = new DeltaDB(new InMemoryMetaDataDB(), this.metaDB);
+    // Create a handle for this DB, as a state for processing
+    M meta = await getBlockMeta(block.parentHash, db: deltaDB);
+    // First, prepare the meta, set-up the context to validate the block.
+    await preProcessBlock(block, meta);
     // Require that the block meets the requirements in the context of
     // connecting it to the currently synced chain, and validate the block.
     // Validation throws if the block is invalid.
-    await validateBlock(block);
+    await validateBlock(block, meta);
     // Process the block, i.e. hash will become known, and chain state is updated.
-    await processBlock(block);
+    await processBlock(block, meta);
     // It's validated, now add it.
-    return await addValidBlock(block);
+    await addValidBlock(block);
+
+    // Now that the block is processed, we know the hash.
+    // Now merge back the temporary changes into the main DB,
+    //  using the hash of the block as part of the key.
+    await this.metaDB.putDataset(deltaDB.change);
+
+    // Now, post-process the state after handling the block
+    await postProcessBlock(block, meta);
   }
 
   /// Force-adds the block, it must be valid.
   Future addValidBlock(B block) async {
     await blockDB.putBlock(block);
-    if (await forkChoice(await headBlock, block)) {
-      _headBlockHash = block.hash;
-    }
+  }
+
+  /// Prepare the [meta] to validate and process the [block]
+  Future preProcessBlock(B block, M meta) async {
+    // Nothing to pre-process by default
   }
 
   /// Validate the [block]
-  Future validateBlock(B block) async {
+  Future validateBlock(B block, M meta) async {
     // most of the validation focuses on the block, approach it from there.
-    await block.validate(this);
+    await block.validate(meta);
     // This function can be overridden to change or add validation behaviour.
   }
 
   /// Note: The supplied [block] is assumed to be validated.
   /// The block is processed by applying its changes to a temporary DB,
   ///  and then finalizing this temporary DB by adding it to the state.
-  Future processBlock(B block) async {
-    // Create a temporary storage for changes
-    DeltaDB deltaDB = new DeltaDB(new InMemoryMetaDataDB(), this.metaDB);
-    // Create a handle for this DB, as a state for processing
-    M meta = await getBlockMeta(block.parentHash, db: deltaDB);
+  Future processBlock(B block, M meta) async {
     // Process the block
     block.applyToDelta(meta);
-    // Now that the block is processed, we know the hash.
-    // Now merge back the temporary changes into the main DB,
-    //  using the hash of the block as part of the key.
-    await this.metaDB.putDataset(deltaDB.change);
   }
 
-  /// Returns true if [block] should be the new head of the chain.
-  /// Override this to implement consensus systems.
-  /// E.g. POW would choice the head based on total accumulated POW.
-  Future<bool> forkChoice(B head, B block) async {
+  /// Update the [meta] to handle the effect of processing [block].
+  /// The head of the chain is updated here.
+  Future postProcessBlock(B block, M meta) async {
+    // Check if the head needs to be updated
+    B head = await this.headBlock;
     /// Simple base implementation: just pick the highest block number.
-    return block.number > head.number;
+    if(block.number > head.number) {
+      headBlockHash = head.hash;
+    }
   }
 
   /// Returns a meta data view of the post-state for the block [blockHash].
