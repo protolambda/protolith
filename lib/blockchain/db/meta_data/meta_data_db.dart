@@ -25,9 +25,9 @@ class MetaDataKey {
   final String kind;
   final Hash256 blockHash;
   // TODO Maybe enforce as an unmodifiable list
-  final List<Uint8List> path;
+  final List<dynamic> path;
 
-  MetaDataKey(this.kind, this.blockHash, this.path);
+  MetaDataKey(this.kind, this.blockHash, [this.path]);
 
   @override
   bool operator ==(Object other) =>
@@ -36,7 +36,12 @@ class MetaDataKey {
               runtimeType == other.runtimeType &&
               kind == other.kind &&
               blockHash == other.blockHash &&
-              listElementwiseComparisonFn(path, other.path, equalUint8lists);
+              ((path == null && other.path == null) ||
+                  listElementwiseComparisonFn(path, other.path, (a, b) {
+                    if (a is int && b is int) return a == b;
+                    if (a is Uint8List && b is Uint8List) return equalUint8lists(a, b);
+                    return false;
+                  }));
 
   @override
   int get hashCode {
@@ -45,9 +50,12 @@ class MetaDataKey {
     if (blockHash != null) {
       res ^= blockHash.hashCode;
     }
-    for (Uint8List v in path) {
-      if (v.lengthInBytes >= 64) {
-        res ^= byteView(v).getUint64(0);
+    if (path != null) {
+      for (dynamic v in path) {
+        if (v is int) res ^= v;
+        else if (v is Uint8List && v.lengthInBytes >= 64) {
+          res ^= byteView(v).getUint64(0);
+        }
       }
     }
     return res;

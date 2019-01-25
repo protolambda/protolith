@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
+import 'package:protolith/blockchain/hash.dart';
 
 export 'package:pointycastle/src/utils.dart';
 
@@ -120,4 +121,11 @@ repeatFn<X>(X fn(X x)) {
   innerRepeat(x, n) => n == 0 ? x : innerRepeat(fn(x), n - 1);
   return innerRepeat;
 }
+
+Uint8List encHash256(Hash256 v) => v.uint8list;
+Hash256 decHash256(Uint8List v) => Hash256.fromTypedData(v);
+
+
+Uint8List encInt64(int v) => uint8View(new Uint64List.fromList([v]));
+int decInt64(Uint8List v) => byteView(v).getUint64(0);
 

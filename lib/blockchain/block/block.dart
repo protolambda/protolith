@@ -48,9 +48,9 @@ abstract class Block<M extends BlockMeta> with LazyHashed<Hash256> {
     if (delta.blockNum + 1 != number)
       throw Exception(
           "Cannot apply block changes at height ${number} to meta at ${delta.blockNum}");
-    if (delta.hash != parentHash)
+    if (delta.blockHash != parentHash)
       throw Exception(
-          "Cannot apply block changes in block, building on parent ${parentHash}, to meta at block ${delta.hash}");
+          "Cannot apply block changes in block, building on parent ${parentHash}, to meta at block ${delta.blockHash}");
 
   }
 }
