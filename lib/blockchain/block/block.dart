@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:protolith/blockchain/chain/block_chain.dart';
 import 'package:protolith/blockchain/exceptions/invalid_block.dart';
 import 'package:protolith/blockchain/hash.dart';
 import 'package:protolith/blockchain/meta/blocks/meta.dart';

@@ -13,6 +13,7 @@ class InMemoryMetaDataDB extends MetaDataDB {
 
   Stream<MetaDataKey> get keys => new Stream.fromIterable(_db.keys);
 
+  // TODO: get data from key block ancestors if there's none for the key itself
   @override
   Future<Uint8List> getData(MetaDataKey key) async => _db[key];
 

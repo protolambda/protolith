@@ -13,4 +13,9 @@ class BlockMeta {
 
   BlockMeta(this.blockHash, this.blockNum, this.db);
 
+
+  Future genesis() async {
+    // To override in any sub-class.
+    // Then call super.genesis() to keep behaviour of other mixins.
+  }
 }
