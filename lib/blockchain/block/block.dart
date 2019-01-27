@@ -1,16 +1,10 @@
 import 'dart:async';
 
-import 'package:protolith/blockchain/exceptions/invalid_block.dart';
 import 'package:protolith/blockchain/hash.dart';
 import 'package:protolith/blockchain/meta/blocks/meta.dart';
 import 'package:protolith/blockchain/mixins/lazy_hashed.dart';
 
 abstract class Block<M extends BlockMeta> with LazyHashed<Hash256> {
-  /// QUANTITY - the block number. null when its pending block.
-  int number;
-
-  ///QUANTITY - the unix timestamp for when the block was collated.
-  int timestamp;
 
   /// DATA, 32 Bytes - hash of the block. null when its pending block.
   Hash256 get hash => super.hash;
@@ -32,11 +26,11 @@ abstract class Block<M extends BlockMeta> with LazyHashed<Hash256> {
 
   /// Future, throws if invalid
   Future validate(M pre) async {
-    if (number != pre.blockNum + 1)
-      throw InvalidBlockException<M, Block<M>>(this,
-          "Known pre state is at ${pre.blockNum}, block with number ${number} cannot be connected.");
-
-    // TODO: timestamp validation is ignored, timestamps are manipulated for demo purposes.
+    // To override in any sub-class.
+    // Then call super.validate(pre) to keep behaviour of other mixins.
+    if (pre.blockHash != parentHash)
+      throw Exception(
+          "Cannot validatore block with parent-hash ${parentHash}, supplied pre-meta has different hash: ${pre.blockHash}");
   }
 
   /// Applies the implications of this block to [delta],
@@ -44,12 +38,6 @@ abstract class Block<M extends BlockMeta> with LazyHashed<Hash256> {
   ///  storing every change, to be finalized once the block processing is done
   ///  (i.e. hash is known).
   Future applyToDelta(M delta) async {
-    if (delta.blockNum + 1 != number)
-      throw Exception(
-          "Cannot apply block changes at height ${number} to meta at ${delta.blockNum}");
-    if (delta.blockHash != parentHash)
-      throw Exception(
-          "Cannot apply block changes in block, building on parent ${parentHash}, to meta at block ${delta.blockHash}");
-
+    // Implementation up to sub classes / mixins.
   }
 }

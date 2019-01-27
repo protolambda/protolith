@@ -32,7 +32,7 @@ class StandardBlockChain<M extends StandardBlockMeta, B extends StandardBlock<M>
     B head = await this.headBlock;
     /// Simple base implementation: just pick the highest block number.
     if(block.totalDifficulty + block.difficulty > head.totalDifficulty + block.difficulty) {
-      headBlockHash = head.hash;
+      headBlockHash = block.hash;
     }
   }
 

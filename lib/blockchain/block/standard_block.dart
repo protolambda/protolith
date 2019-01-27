@@ -6,10 +6,11 @@ import 'package:protolith/blockchain/block/block.dart';
 import 'package:protolith/blockchain/block/data/ethash.dart';
 import 'package:protolith/blockchain/block/data/extra.dart';
 import 'package:protolith/blockchain/block/data/gas.dart';
+import 'package:protolith/blockchain/block/data/height.dart';
 import 'package:protolith/blockchain/block/data/output.dart';
 import 'package:protolith/blockchain/block/data/state_change.dart';
 import 'package:protolith/blockchain/block/data/ommer.dart';
-import 'package:protolith/blockchain/chain/block_chain.dart';
+import 'package:protolith/blockchain/block/data/time.dart';
 import 'package:protolith/blockchain/hash.dart';
 import 'package:protolith/blockchain/meta/blocks/standard_meta.dart';
 import 'package:protolith/blockchain/receipt/tx_receipt.dart';
@@ -22,11 +23,13 @@ import 'package:protolith/encodings/serializeables/rlp_serializable.dart';
 
 class StandardBlock<M extends StandardBlockMeta> extends Block<M>
     with
-        OutputBlockData,
-        ExtraBlockData,
-        OmmerBlockData,
+        HeightBlockData<M>,
+        TimeBlockData<M>,
+        OutputBlockData<M>,
+        ExtraBlockData<M>,
+        OmmerBlockData<M>,
         EthashBlockData<M>,
-        GasStateBlockData,
+        GasStateBlockData<M>,
         StateChangeBlockData<M, StandardTransaction<M>>,
         RlpEncodeable,
         RlpDecodeable {

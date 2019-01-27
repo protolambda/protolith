@@ -7,11 +7,9 @@ class BlockMeta {
 
   final Hash256 blockHash;
 
-  final int blockNum;
-
   final MetaDataDB db;
 
-  BlockMeta(this.blockHash, this.blockNum, this.db);
+  BlockMeta(this.blockHash, this.db);
 
 
   Future genesis() async {

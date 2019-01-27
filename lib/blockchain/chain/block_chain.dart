@@ -83,12 +83,11 @@ class BlockChain<M extends BlockMeta, B extends Block<M>> {
   /// Update the [meta] to handle the effect of processing [block].
   /// The head of the chain is updated here.
   Future postProcessBlock(B block, M meta) async {
-    // Check if the head needs to be updated
-    B head = await this.headBlock;
-    /// Simple base implementation: just pick the highest block number.
-    if(block.number > head.number) {
-      headBlockHash = head.hash;
-    }
+    // Example:
+    //    // Check if the head needs to be updated
+    //    B head = await this.headBlock;
+    //    if (... fork choice rule ...)
+    //      headBlockHash = block.hash;
   }
 
   /// Returns a meta data view of the post-state for the block [blockHash].
@@ -101,7 +100,7 @@ class BlockChain<M extends BlockMeta, B extends Block<M>> {
     if (b == null) throw UnknownBlockException(hash, "Block hash is unknown. Cannot build state for it.");
 
     // Create the view for the block.
-    BlockMeta meta = new BlockMeta(b.hash, b.number, db ?? metaDB);
+    BlockMeta meta = new BlockMeta(b.hash, db ?? metaDB);
 
     return meta;
   }
